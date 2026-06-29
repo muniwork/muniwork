@@ -12,9 +12,9 @@ const pipelineSections = [
   {
     id: 'procurement',
     title: 'Procurement',
-    label: 'Future data surface',
+    label: 'Purchasing',
     body:
-      'Bid notices, purchasing links, contract opportunities, and vendor-facing documents will live here once sources are connected.',
+      'Bid notices, purchasing links, contract opportunities, and vendor-facing documents for this organization.',
     metrics: [
       ['Open bids', 'Not loaded'],
       ['Source status', 'Unconnected'],
@@ -23,9 +23,9 @@ const pipelineSections = [
   {
     id: 'meetings',
     title: 'Meetings',
-    label: 'Future data surface',
+    label: 'Public records',
     body:
-      'Meeting calendars, agendas, minutes, and recent public decisions will be grouped here when those sources are available.',
+      'Meeting calendars, agendas, minutes, and recent public decisions for this organization.',
     metrics: [
       ['Upcoming meetings', 'Not loaded'],
       ['Recent records', 'Unconnected'],
@@ -46,7 +46,7 @@ const pipelineSections = [
       </p>
     </div>
 
-    <div class="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
+    <div class="grid items-start gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
       <article class="card">
         <header>
           <h3 class="text-xl font-semibold">Organization summary</h3>
@@ -85,7 +85,7 @@ const pipelineSections = [
       <p class="badge" data-variant="secondary">Jobs data pending</p>
     </div>
 
-    <div class="grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.55fr)]">
+    <div class="grid items-start gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.55fr)]">
       <article class="card">
         <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
