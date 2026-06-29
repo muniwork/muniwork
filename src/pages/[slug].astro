@@ -2,24 +2,46 @@
 export const prerender = false;
 
 import ProfilePage from '../components/profile/ProfilePage.astro';
+import SupabaseSetupNotice from '../components/system/SupabaseSetupNotice.astro';
 import { getOrganizationBySlug } from '../lib/organizations.js';
+import { MissingSupabaseEnvError } from '../lib/supabase.js';
+import '../styles/global.css';
 
 const { slug } = Astro.params;
-const organization = await getOrganizationBySlug(slug);
+let organization = null;
+let missingSupabaseVariables = [];
 
-if (!organization) {
+try {
+  organization = await getOrganizationBySlug(slug);
+} catch (error) {
+  if (!(error instanceof MissingSupabaseEnvError)) {
+    throw error;
+  }
+
+  missingSupabaseVariables = error.missingVariables;
+}
+
+if (missingSupabaseVariables.length > 0) {
+  Astro.response.status = 503;
+} else if (!organization) {
   Astro.response.status = 404;
 }
 ---
 
-{organization ? (
+{missingSupabaseVariables.length > 0 ? (
+  <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
+) : organization ? (
   <ProfilePage organization={organization} />
 ) : (
-  <main style="padding: 48px 20px; font-family: Inter, ui-sans-serif, system-ui, sans-serif;">
-    <div style="max-width: 720px; margin: 0 auto;">
-      <p style="text-transform: uppercase; letter-spacing: 0.12em; color: #7f6b53; font-size: 0.75rem;">Not found</p>
-      <h1 style="margin: 12px 0 0; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1;">Organization not found</h1>
-      <p style="margin-top: 12px; color: #5a564f; line-height: 1.6;">
+  <main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
+    <div class="mx-auto max-w-3xl">
+      <p class="badge" data-variant="outline">
+        Not found
+      </p>
+      <h1 class="mt-3 text-4xl font-semibold leading-none sm:text-5xl">
+        Organization not found
+      </h1>
+      <p class="mt-3 leading-7 text-muted-foreground">
         There is no organization profile for this slug.
       </p>
     </div>

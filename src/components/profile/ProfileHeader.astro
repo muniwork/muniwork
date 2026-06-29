@@ -7,18 +7,27 @@ const typeLabel =
     : 'Municipality profile';
 ---
 
-<header class="profile-header">
-  <p class="eyebrow">{typeLabel}</p>
-  <h1>{organization.officialName}</h1>
-  <p class="subtitle">
-    {organization.stateCode} · {organization.slug}
-  </p>
+<header class="card">
+  <header>
+    <p class="badge" data-variant="outline">{typeLabel}</p>
+    <h1 class="mt-3 text-4xl font-semibold leading-none sm:text-6xl lg:text-7xl">
+      {organization.officialName}
+    </h1>
+    <p class="mt-3 text-base text-muted-foreground">
+      {organization.stateCode} · {organization.slug}
+    </p>
+  </header>
   {organization.officialWebsite && (
-    <p class="website">
-      <a href={organization.officialWebsite} rel="noreferrer" target="_blank">
+    <footer>
+      <a
+        class="btn px-0"
+        data-variant="link"
+        href={organization.officialWebsite}
+        rel="noreferrer"
+        target="_blank"
+      >
         Official website
       </a>
-    </p>
+    </footer>
   )}
 </header>
-

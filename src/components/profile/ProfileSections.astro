@@ -2,23 +2,30 @@
 const { organization } = Astro.props;
 ---
 
-<section class="profile-sections">
+<section class="grid gap-4">
   <article class="card">
-    <h2>Profile summary</h2>
-    <p>
-      This shared template renders both counties and municipalities from the same
-      route shape. The page is ready for source-backed sections like contacts,
-      services, budgets, or jobs as soon as those fields are wired in.
-    </p>
+    <header>
+      <h2>Profile summary</h2>
+    </header>
+    <section>
+      <p class="leading-7 text-muted-foreground">
+        This shared template renders both counties and municipalities from the same
+        route shape. The page is ready for source-backed sections like contacts,
+        services, budgets, or jobs as soon as those fields are wired in.
+      </p>
+    </section>
   </article>
 
   <article class="card">
-    <h2>Data model check</h2>
-    <p>
-      Organization type: <strong>{organization.organizationType}</strong>.
-      The route does not change for cities versus counties; only the content
-      branches when the data needs it.
-    </p>
+    <header>
+      <h2>Data model check</h2>
+    </header>
+    <section>
+      <p class="leading-7 text-muted-foreground">
+        Organization type: <strong>{organization.organizationType}</strong>.
+        The route does not change for cities versus counties; only the content
+        branches when the data needs it.
+      </p>
+    </section>
   </article>
 </section>
-

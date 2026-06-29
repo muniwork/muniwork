@@ -1,0 +1,44 @@
+---
+interface Props {
+  missingVariables?: string[];
+}
+
+const { missingVariables = [] } = Astro.props;
+---
+
+<main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
+  <div class="mx-auto grid max-w-3xl gap-6">
+    <section class="alert">
+      <strong>Supabase is not configured</strong>
+      <section>
+        <p>
+          Add the required server-side environment variables before loading
+          data-backed organization pages.
+        </p>
+      </section>
+    </section>
+
+    <section class="card">
+      <header>
+        <h2>Missing variables</h2>
+      </header>
+      <section>
+        <ul class="grid gap-2">
+          {missingVariables.map((name) => (
+            <li>
+              <code class="rounded-md bg-muted px-2 py-1 text-sm">{name}</code>
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section class="border-t pt-5">
+        <p class="text-sm leading-6 text-muted-foreground">
+          Copy <code>.env.example</code> to <code>.env</code>, fill in these
+          values, then restart the Astro dev server. Keep{' '}
+          <code>SUPABASE_SERVICE_ROLE_KEY</code> server-only; do not expose it
+          through a public client variable.
+        </p>
+      </section>
+    </section>
+  </div>
+</main>

@@ -8,12 +8,15 @@ const metaItems = [
 ];
 ---
 
-<dl class="profile-meta">
+<dl class="grid gap-4 sm:grid-cols-3">
   {metaItems.map(([label, value]) => (
-    <div class="meta-item">
-      <dt>{label}</dt>
-      <dd>{value}</dd>
+    <div class="card" data-size="sm">
+      <section>
+        <dt class="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          {label}
+        </dt>
+        <dd class="mt-2 text-lg font-semibold">{value}</dd>
+      </section>
     </div>
   ))}
 </dl>
-
