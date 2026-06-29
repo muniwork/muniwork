@@ -1,0 +1,2 @@
+-- Recorded in production before this repo started tracking Supabase migrations.
+-- Covered by 20260629000000_baseline_current_schema.sql.
