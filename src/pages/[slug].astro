@@ -1,0 +1,27 @@
+---
+export const prerender = false;
+
+import ProfilePage from '../components/profile/ProfilePage.astro';
+import { getOrganizationBySlug } from '../lib/organizations.js';
+
+const { slug } = Astro.params;
+const organization = await getOrganizationBySlug(slug);
+
+if (!organization) {
+  Astro.response.status = 404;
+}
+---
+
+{organization ? (
+  <ProfilePage organization={organization} />
+) : (
+  <main style="padding: 48px 20px; font-family: Inter, ui-sans-serif, system-ui, sans-serif;">
+    <div style="max-width: 720px; margin: 0 auto;">
+      <p style="text-transform: uppercase; letter-spacing: 0.12em; color: #7f6b53; font-size: 0.75rem;">Not found</p>
+      <h1 style="margin: 12px 0 0; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1;">Organization not found</h1>
+      <p style="margin-top: 12px; color: #5a564f; line-height: 1.6;">
+        There is no organization profile for this slug.
+      </p>
+    </div>
+  </main>
+)}

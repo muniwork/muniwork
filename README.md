@@ -2,6 +2,13 @@
 
 Public site and front end for Muniwork.
 
-## Status
+## Current Scope
 
-Repo initialized. Next step is choosing the app framework and scaffolding the site.
+- Astro + Netlify
+- Root-level organization profile pages only
+- Shared template for municipalities and counties
+
+## Required environment variables
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`

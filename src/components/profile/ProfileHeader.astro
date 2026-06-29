@@ -1,0 +1,24 @@
+---
+const { organization } = Astro.props;
+
+const typeLabel =
+  organization.organizationType === 'county'
+    ? 'County profile'
+    : 'Municipality profile';
+---
+
+<header class="profile-header">
+  <p class="eyebrow">{typeLabel}</p>
+  <h1>{organization.officialName}</h1>
+  <p class="subtitle">
+    {organization.stateCode} · {organization.slug}
+  </p>
+  {organization.officialWebsite && (
+    <p class="website">
+      <a href={organization.officialWebsite} rel="noreferrer" target="_blank">
+        Official website
+      </a>
+    </p>
+  )}
+</header>
+

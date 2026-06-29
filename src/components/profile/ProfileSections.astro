@@ -1,0 +1,24 @@
+---
+const { organization } = Astro.props;
+---
+
+<section class="profile-sections">
+  <article class="card">
+    <h2>Profile summary</h2>
+    <p>
+      This shared template renders both counties and municipalities from the same
+      route shape. The page is ready for source-backed sections like contacts,
+      services, budgets, or jobs as soon as those fields are wired in.
+    </p>
+  </article>
+
+  <article class="card">
+    <h2>Data model check</h2>
+    <p>
+      Organization type: <strong>{organization.organizationType}</strong>.
+      The route does not change for cities versus counties; only the content
+      branches when the data needs it.
+    </p>
+  </article>
+</section>
+

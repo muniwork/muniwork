@@ -1,0 +1,19 @@
+---
+const { organization } = Astro.props;
+
+const metaItems = [
+  ['Type', organization.organizationType],
+  ['State', organization.stateCode],
+  ['Slug', organization.slug],
+];
+---
+
+<dl class="profile-meta">
+  {metaItems.map(([label, value]) => (
+    <div class="meta-item">
+      <dt>{label}</dt>
+      <dd>{value}</dd>
+    </div>
+  ))}
+</dl>
+
