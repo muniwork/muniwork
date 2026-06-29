@@ -1,15 +1,36 @@
 ---
 import ProfileHeader from './ProfileHeader.astro';
-import ProfileMeta from './ProfileMeta.astro';
 import ProfileSections from './ProfileSections.astro';
 
 const { organization } = Astro.props;
+
+const sections = ['Overview', 'Careers', 'Procurement', 'Meetings'];
 ---
 
-<main class="min-h-screen bg-muted/30 px-4 py-12 text-foreground sm:px-5 sm:py-16">
-  <div class="mx-auto grid max-w-5xl gap-6">
+<main class="min-h-screen bg-background text-foreground">
+  <div class="border-b bg-muted/30">
     <ProfileHeader organization={organization} />
-    <ProfileMeta organization={organization} />
+  </div>
+
+  <div class="sticky top-0 z-10 border-b bg-background/95">
+    <nav
+      aria-label="Organization profile sections"
+      class="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8"
+    >
+      {sections.map((section) => (
+        <a
+          class="btn shrink-0"
+          data-size="sm"
+          data-variant="ghost"
+          href={`#${section.toLowerCase()}`}
+        >
+          {section}
+        </a>
+      ))}
+    </nav>
+  </div>
+
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
     <ProfileSections organization={organization} />
   </div>
 </main>

@@ -1,31 +1,161 @@
 ---
 const { organization } = Astro.props;
+
+const facts = [
+  ['Organization type', organization.organizationType],
+  ['State', organization.stateCode],
+  ['Profile slug', organization.slug],
+  ['Website', organization.officialWebsite ? 'Available' : 'Not listed'],
+];
+
+const pipelineSections = [
+  {
+    id: 'procurement',
+    title: 'Procurement',
+    label: 'Future data surface',
+    body:
+      'Bid notices, purchasing links, contract opportunities, and vendor-facing documents will live here once sources are connected.',
+    metrics: [
+      ['Open bids', 'Not loaded'],
+      ['Source status', 'Unconnected'],
+    ],
+  },
+  {
+    id: 'meetings',
+    title: 'Meetings',
+    label: 'Future data surface',
+    body:
+      'Meeting calendars, agendas, minutes, and recent public decisions will be grouped here when those sources are available.',
+    metrics: [
+      ['Upcoming meetings', 'Not loaded'],
+      ['Recent records', 'Unconnected'],
+    ],
+  },
+];
 ---
 
-<section class="grid gap-4">
-  <article class="card">
-    <header>
-      <h2>Profile summary</h2>
-    </header>
-    <section>
-      <p class="leading-7 text-muted-foreground">
-        This shared template renders both counties and municipalities from the same
-        route shape. The page is ready for source-backed sections like contacts,
-        services, budgets, or jobs as soon as those fields are wired in.
+<div class="grid gap-10">
+  <section id="overview" class="scroll-mt-24">
+    <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="text-sm font-medium text-muted-foreground">Profile</p>
+        <h2 class="text-2xl font-semibold">Overview</h2>
+      </div>
+      <p class="text-sm text-muted-foreground">
+        Source-backed facts for this organization.
       </p>
-    </section>
-  </article>
+    </div>
 
-  <article class="card">
-    <header>
-      <h2>Data model check</h2>
-    </header>
-    <section>
-      <p class="leading-7 text-muted-foreground">
-        Organization type: <strong>{organization.organizationType}</strong>.
-        The route does not change for cities versus counties; only the content
-        branches when the data needs it.
-      </p>
-    </section>
-  </article>
-</section>
+    <div class="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
+      <article class="card">
+        <header>
+          <h3 class="text-xl font-semibold">Organization summary</h3>
+        </header>
+        <section>
+          <p class="leading-7 text-muted-foreground">
+            {organization.officialName} is a {organization.organizationType} profile
+            in {organization.stateCode}. This page is organized around the core
+            public-sector workflows Muniwork will track for each organization:
+            jobs, procurement, and meetings.
+          </p>
+        </section>
+      </article>
+
+      <dl class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+        {facts.map(([label, value]) => (
+          <div class="card" data-size="sm">
+            <section>
+              <dt class="text-xs font-medium uppercase text-muted-foreground">
+                {label}
+              </dt>
+              <dd class="mt-2 text-base font-semibold">{value}</dd>
+            </section>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section id="careers" class="scroll-mt-24">
+    <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="text-sm font-medium text-muted-foreground">Hiring</p>
+        <h2 class="text-2xl font-semibold">Careers</h2>
+      </div>
+      <p class="badge" data-variant="secondary">Jobs data pending</p>
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.55fr)]">
+      <article class="card">
+        <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 class="text-xl font-semibold">Open roles</h3>
+            <p class="text-sm text-muted-foreground">
+              Public job postings for this organization.
+            </p>
+          </div>
+          <p class="badge" data-variant="outline">0 loaded</p>
+        </header>
+        <section>
+          <div class="alert">
+            <div>
+              <strong>No jobs loaded yet</strong>
+              <p>
+                Careers will become the primary activity section once job postings
+                are populated for this organization.
+              </p>
+            </div>
+          </div>
+        </section>
+      </article>
+
+      <div class="grid gap-3">
+        <article class="card" data-size="sm">
+          <section>
+            <p class="text-xs font-medium uppercase text-muted-foreground">Open roles</p>
+            <p class="mt-2 text-2xl font-semibold">0</p>
+          </section>
+        </article>
+        <article class="card" data-size="sm">
+          <section>
+            <p class="text-xs font-medium uppercase text-muted-foreground">Departments</p>
+            <p class="mt-2 text-2xl font-semibold">-</p>
+          </section>
+        </article>
+        <article class="card" data-size="sm">
+          <section>
+            <p class="text-xs font-medium uppercase text-muted-foreground">Last refresh</p>
+            <p class="mt-2 text-base font-semibold">Not available</p>
+          </section>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid gap-4 lg:grid-cols-2">
+    {pipelineSections.map((section) => (
+      <article id={section.id} class="card scroll-mt-24">
+        <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p class="text-sm font-medium text-muted-foreground">{section.label}</p>
+            <h2 class="text-2xl font-semibold">{section.title}</h2>
+          </div>
+          <p class="badge" data-variant="outline">Not loaded</p>
+        </header>
+        <section class="grid gap-5">
+          <p class="leading-7 text-muted-foreground">{section.body}</p>
+          <dl class="grid gap-3 sm:grid-cols-2">
+            {section.metrics.map(([label, value]) => (
+              <div>
+                <dt class="text-xs font-medium uppercase text-muted-foreground">
+                  {label}
+                </dt>
+                <dd class="mt-2 text-base font-semibold">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      </article>
+    ))}
+  </section>
+</div>
