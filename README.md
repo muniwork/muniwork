@@ -29,8 +29,6 @@ Public site and front end for Muniwork.
 - `MAPBOX_STATIC_ACCESS_TOKEN` for static organization profile map covers
 - `MAPBOX_STATIC_STYLE` optionally overrides the default `mapbox/light-v11`
   static map style
-- `MAPBOX_STATIC_ZOOM_OVERRIDE` optionally forces a static map zoom for local
-  visual tuning
 - `MAPBOX_GEOCODING_TOKEN` for the offline map-cover enrichment script
 
 For local development, copy `.env.example` to `.env` and fill in the values from
@@ -47,9 +45,6 @@ map.
 The default static map style is `mapbox/light-v11`. To remove city labels, create
 and publish a custom Mapbox Studio style with the unwanted label layers hidden,
 then set `MAPBOX_STATIC_STYLE` to that style path.
-
-Set `MAPBOX_STATIC_ZOOM_OVERRIDE` locally to preview a different static map zoom
-without changing stored organization coordinates.
 
 Coordinates are populated outside page rendering:
 

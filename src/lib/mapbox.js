@@ -7,15 +7,3 @@ export function getMapboxStaticAccessToken() {
 export function getMapboxStaticStyle() {
   return process.env.MAPBOX_STATIC_STYLE || DEFAULT_STATIC_STYLE;
 }
-
-export function getMapboxStaticZoomOverride() {
-  const rawZoom = process.env.MAPBOX_STATIC_ZOOM_OVERRIDE?.trim();
-
-  if (!rawZoom) {
-    return null;
-  }
-
-  const zoom = Number(rawZoom);
-
-  return Number.isFinite(zoom) ? zoom : null;
-}

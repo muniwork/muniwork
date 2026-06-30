@@ -2,7 +2,6 @@
 import {
   getMapboxStaticAccessToken,
   getMapboxStaticStyle,
-  getMapboxStaticZoomOverride,
 } from '../../lib/mapbox.js';
 
 const { organization } = Astro.props;
@@ -12,10 +11,9 @@ const MAP_IMAGE_SIZE = '1280x240@2x';
 
 const lat = Number(organization.coverLat);
 const lng = Number(organization.coverLng);
-const storedZoom = Number.isFinite(Number(organization.coverZoom))
+const zoom = Number.isFinite(Number(organization.coverZoom))
   ? Number(organization.coverZoom)
   : DEFAULT_ZOOM;
-const zoom = getMapboxStaticZoomOverride() ?? storedZoom;
 const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng);
 const mapboxToken = getMapboxStaticAccessToken();
 const mapboxStyle = getMapboxStaticStyle();
