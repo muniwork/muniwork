@@ -4,9 +4,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const DEFAULT_ZOOM_BY_QUERY_TYPE = {
-  address: 12,
-  county: 8,
-  municipality: 10,
+  address: 14,
+  county: 13,
+  municipality: 13,
 };
 const PAGE_SIZE = 500;
 const REQUEST_DELAY_MS = 250;
