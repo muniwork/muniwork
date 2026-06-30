@@ -1,5 +1,6 @@
 ---
 import ProfileHeader from './ProfileHeader.astro';
+import ProfileMapCover from './ProfileMapCover.astro';
 import ProfileSections from './ProfileSections.astro';
 
 const { organization } = Astro.props;
@@ -8,6 +9,8 @@ const sections = ['Overview', 'Careers', 'Procurement', 'Meetings'];
 ---
 
 <main class="min-h-screen bg-background text-foreground">
+  <ProfileMapCover organization={organization} />
+
   <div class="border-b bg-muted/30">
     <ProfileHeader organization={organization} />
   </div>
@@ -33,4 +36,8 @@ const sections = ['Overview', 'Careers', 'Procurement', 'Meetings'];
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
     <ProfileSections organization={organization} />
   </div>
+
+  <footer class="border-t px-4 py-5 text-center text-xs text-muted-foreground sm:px-6 lg:px-8">
+    Maps © Mapbox © OpenStreetMap contributors
+  </footer>
 </main>

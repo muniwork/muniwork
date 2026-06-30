@@ -26,7 +26,32 @@ Public site and front end for Muniwork.
 
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `MAPBOX_STATIC_ACCESS_TOKEN` for static organization profile map covers
+- `MAPBOX_GEOCODING_TOKEN` for the offline map-cover enrichment script
 
 For local development, copy `.env.example` to `.env` and fill in the values from
 Supabase before starting Astro. `SUPABASE_SERVICE_ROLE_KEY` is server-only; do
 not expose it in browser code or prefix it with a public client variable name.
+
+## Map cover enrichment
+
+Organization profile pages render a thin Mapbox Static Images cover only when
+stored `cover_lat` and `cover_lng` coordinates exist. When coordinates are
+absent, the page renders a neutral background instead of a broken or arbitrary
+map.
+
+Coordinates are populated outside page rendering:
+
+```bash
+npm run enrich:map-covers
+npm run enrich:map-covers -- --organization boca-raton-fl
+npm run enrich:map-covers -- --limit 25
+npm run enrich:map-covers -- --write
+```
+
+Dry-run mode is the default. `--write` stores coordinates after a conservative
+server-side Mapbox geocoding match. The script uses existing Muniwork data only:
+municipalities use Census `CITY` plus `STATE`, counties use the organization
+county name plus state, and other organization types require a full Census
+address. Rows with existing `cover_lat`, `cover_lng`, `cover_zoom`, or
+`cover_location_label` are skipped so manual values are preserved.

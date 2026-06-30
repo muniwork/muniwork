@@ -12,6 +12,10 @@ function normalizeOrganization(row) {
     stateCode: row.state_code,
     officialWebsite: row.official_website,
     slug: row.slug,
+    coverLat: row.cover_lat,
+    coverLng: row.cover_lng,
+    coverZoom: row.cover_zoom,
+    coverLocationLabel: row.cover_location_label,
   };
 }
 
@@ -23,7 +27,9 @@ export async function getOrganizationBySlug(slug) {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from('organizations')
-    .select('id, official_name, organization_type, state_code, official_website, slug')
+    .select(
+      'id, official_name, organization_type, state_code, official_website, slug, cover_lat, cover_lng, cover_zoom, cover_location_label'
+    )
     .eq('slug', slug)
     .maybeSingle();
 
