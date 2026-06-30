@@ -37,7 +37,7 @@ function loadDotEnv() {
 function parseArgs(argv) {
   const args = {
     dryRun: true,
-    limit: Number.POSITIVE_INFINITY,
+    limit: null,
     organizationSlug: null,
   };
 
@@ -66,7 +66,7 @@ function parseArgs(argv) {
     }
   }
 
-  if (!Number.isFinite(args.limit) || args.limit <= 0) {
+  if (args.limit !== null && (!Number.isFinite(args.limit) || args.limit <= 0)) {
     throw new Error('--limit must be a positive number');
   }
 
@@ -437,7 +437,7 @@ async function main() {
   console.log(args.dryRun ? 'mode\tdry-run' : 'mode\twrite');
 
   for (const organization of organizations) {
-    if (stats.matched >= args.limit) {
+    if (args.limit !== null && stats.matched >= args.limit) {
       break;
     }
 
