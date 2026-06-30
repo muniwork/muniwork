@@ -5,7 +5,7 @@ Public site and front end for Muniwork.
 ## Current Scope
 
 - Astro + Netlify + Tailwind CSS + Basecoat Rhea
-- Root-level organization profile pages only
+- Organization overview pages plus Careers subpages
 - Shared template for municipalities and counties
 
 ## Runtime

@@ -1,17 +1,5 @@
 ---
-type OpenJob = {
-  id: string;
-  title: string;
-  department?: string | null;
-  location?: string | null;
-  employmentType?: string | null;
-  postedAt?: string | null;
-  closesAt?: string | null;
-  applyUrl?: string | null;
-  status: string;
-  firstSeenAt?: string | null;
-  lastSeenAt?: string | null;
-};
+import type { OpenJob } from '../../lib/jobs';
 
 const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
 const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;

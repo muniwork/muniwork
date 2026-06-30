@@ -1,22 +1,9 @@
 ---
 import ProfileCareersList from './ProfileCareersList.astro';
 import ProfilePipelineSections from './ProfilePipelineSections.astro';
-import ProfileSections from './ProfileSections.astro';
+import ProfileOverview from './ProfileOverview.astro';
 import ProfileShell from './ProfileShell.astro';
-
-type OpenJob = {
-  id: string;
-  title: string;
-  department?: string | null;
-  location?: string | null;
-  employmentType?: string | null;
-  postedAt?: string | null;
-  closesAt?: string | null;
-  applyUrl?: string | null;
-  status: string;
-  firstSeenAt?: string | null;
-  lastSeenAt?: string | null;
-};
+import type { OpenJob } from '../../lib/jobs';
 
 const { organization } = Astro.props;
 const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
@@ -25,7 +12,7 @@ const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
 
 <ProfileShell organization={organization}>
   <div class="grid gap-10">
-    <ProfileSections organization={organization} />
+    <ProfileOverview organization={organization} />
     <ProfileCareersList
       openJobs={openJobs}
       totalOpenJobs={totalOpenJobs}

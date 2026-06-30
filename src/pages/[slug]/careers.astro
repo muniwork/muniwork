@@ -4,23 +4,10 @@ export const prerender = false;
 import ProfileCareersList from '../../components/profile/ProfileCareersList.astro';
 import ProfileShell from '../../components/profile/ProfileShell.astro';
 import SupabaseSetupNotice from '../../components/system/SupabaseSetupNotice.astro';
-import { getOpenJobsByOrganizationId, getOrganizationBySlug } from '../../lib/organizations.js';
+import type { OpenJob } from '../../lib/jobs';
+import { getOrganizationProfileBySlug } from '../../lib/profile';
 import { MissingSupabaseEnvError } from '../../lib/supabase.js';
 import '../../styles/global.css';
-
-type OpenJob = {
-  id: string;
-  title: string;
-  department?: string | null;
-  location?: string | null;
-  employmentType?: string | null;
-  postedAt?: string | null;
-  closesAt?: string | null;
-  applyUrl?: string | null;
-  status: string;
-  firstSeenAt?: string | null;
-  lastSeenAt?: string | null;
-};
 
 const { slug } = Astro.params;
 let organization = null;
@@ -29,13 +16,10 @@ let totalOpenJobs = 0;
 let missingSupabaseVariables = [];
 
 try {
-  organization = await getOrganizationBySlug(slug);
-
-  if (organization) {
-    const jobsResult = await getOpenJobsByOrganizationId(organization.id, { limit: 100 });
-    openJobs = jobsResult.jobs;
-    totalOpenJobs = jobsResult.total;
-  }
+  const profile = await getOrganizationProfileBySlug(slug, { jobLimit: 100 });
+  organization = profile.organization;
+  openJobs = profile.openJobs;
+  totalOpenJobs = profile.totalOpenJobs;
 } catch (error) {
   if (!(error instanceof MissingSupabaseEnvError)) {
     throw error;
