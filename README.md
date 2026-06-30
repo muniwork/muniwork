@@ -27,6 +27,8 @@ Public site and front end for Muniwork.
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `MAPBOX_STATIC_ACCESS_TOKEN` for static organization profile map covers
+- `MAPBOX_STATIC_STYLE` optionally overrides the default `mapbox/light-v11`
+  static map style
 - `MAPBOX_GEOCODING_TOKEN` for the offline map-cover enrichment script
 
 For local development, copy `.env.example` to `.env` and fill in the values from
@@ -39,6 +41,10 @@ Organization profile pages render a thin Mapbox Static Images cover only when
 stored `cover_lat` and `cover_lng` coordinates exist. When coordinates are
 absent, the page renders a neutral background instead of a broken or arbitrary
 map.
+
+The default static map style is `mapbox/light-v11`. To remove city labels, create
+and publish a custom Mapbox Studio style with the unwanted label layers hidden,
+then set `MAPBOX_STATIC_STYLE` to that style path.
 
 Coordinates are populated outside page rendering:
 
