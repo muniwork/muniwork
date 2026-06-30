@@ -9,10 +9,11 @@ const sections = ['Overview', 'Careers', 'Procurement', 'Meetings'];
 ---
 
 <main class="min-h-screen bg-background text-foreground">
-  <ProfileMapCover organization={organization} />
-
-  <div class="border-b bg-muted/30">
-    <ProfileHeader organization={organization} />
+  <div class="relative overflow-hidden border-b bg-muted/30">
+    <ProfileMapCover organization={organization} />
+    <div class="relative z-10 bg-background/70">
+      <ProfileHeader organization={organization} />
+    </div>
   </div>
 
   <div class="sticky top-0 z-10 border-b bg-background/95">

@@ -33,12 +33,12 @@ const label = organization.coverLocationLabel || organization.officialName;
 
 <section
   aria-label={hasCoordinates ? `Map cover for ${label}` : 'Map cover unavailable'}
-  class="h-28 overflow-hidden border-b bg-muted sm:h-36"
+  class="absolute inset-0 h-full w-full overflow-hidden bg-muted"
 >
   {mapUrl ? (
     <img
       alt=""
-      class="h-full w-full object-cover opacity-80"
+      class="h-full w-full object-cover opacity-45"
       decoding="async"
       loading="eager"
       src={mapUrl}
