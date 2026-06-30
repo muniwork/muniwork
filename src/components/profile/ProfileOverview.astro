@@ -1,6 +1,5 @@
 ---
 import { ExternalLink } from '@lucide/astro';
-import { Landmark } from '@lucide/astro';
 
 const { organization } = Astro.props;
 
@@ -39,12 +38,11 @@ const overviewDetails = [
   class="scroll-mt-24"
   aria-labelledby="overview-title"
 >
-  <h2 id="overview-title" class="mb-4 flex items-center gap-2 text-2xl font-semibold">
-    <Landmark class="size-6" aria-hidden="true" />
-    Overview
-  </h2>
-
   <article class="card">
+    <header>
+      <h2 id="overview-title" class="text-2xl font-semibold">Overview</h2>
+    </header>
+
     <section>
       <p class="text-lg leading-8 text-muted-foreground">
         {overviewIntro}

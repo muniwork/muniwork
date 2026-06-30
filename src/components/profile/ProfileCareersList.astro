@@ -1,5 +1,5 @@
 ---
-import { BriefcaseBusiness, ExternalLink } from '@lucide/astro';
+import { ExternalLink } from '@lucide/astro';
 
 import type { OpenJob } from '../../lib/jobs';
 
@@ -31,17 +31,14 @@ function formatOpenJobsSummary() {
 ---
 
 <section id="careers" class="scroll-mt-24">
-  <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-    <h2 class="flex items-center gap-2 text-2xl font-semibold">
-      <BriefcaseBusiness class="size-6" aria-hidden="true" />
-      Careers
-    </h2>
-    <p class="badge" data-variant={hasOpenJobs ? 'outline' : 'secondary'}>
-      {formatOpenJobsSummary()}
-    </p>
-  </div>
-
   <article class="card">
+    <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+      <h2 class="text-2xl font-semibold">Careers</h2>
+      <p class="badge" data-variant={hasOpenJobs ? 'outline' : 'secondary'}>
+        {formatOpenJobsSummary()}
+      </p>
+    </header>
+
     <section>
       {hasOpenJobs ? (
         <div class="grid divide-y">
@@ -85,8 +82,7 @@ function formatOpenJobsSummary() {
           ))}
           {careersHref && totalOpenJobs > visibleJobCount && (
             <div class="pt-4">
-              <a class="btn gap-2" data-variant="outline" href={careersHref}>
-                <BriefcaseBusiness class="size-4" aria-hidden="true" />
+              <a class="btn" data-variant="outline" href={careersHref}>
                 View all careers
               </a>
             </div>
