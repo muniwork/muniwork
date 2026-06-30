@@ -1,51 +1,83 @@
 ---
+import { ExternalLink } from '@lucide/astro';
+import { Landmark } from '@lucide/astro';
+
 const { organization } = Astro.props;
 
-const facts = [
-  ['Organization type', organization.organizationType],
+const governanceIntroBySlug: Record<string, string> = {
+  'boca-raton-fl':
+    'Boca Raton is governed by a five-member City Council, including a directly elected mayor. Council members are elected at large to designated seats in nonpartisan elections, with staggered three-year terms and consecutive-term limits.',
+};
+
+const overviewIntro =
+  governanceIntroBySlug[organization.slug] ??
+  `${organization.officialName} is a ${organization.organizationType} profile in ${organization.stateCode}. This page is organized around the core public-sector workflows Muniwork will track for each organization: jobs, procurement, and meetings.`;
+
+function formatOrganizationType(value: string | null | undefined): string {
+  if (!value) {
+    return 'Organization';
+  }
+
+  return value
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+const overviewDetails = [
+  ['Type', formatOrganizationType(organization.organizationType)],
   ['State', organization.stateCode],
-  ['Profile slug', organization.slug],
-  ['Website', organization.officialWebsite ? 'Available' : 'Not listed'],
-];
+  organization.officialWebsite
+    ? ['Website', 'Official website', organization.officialWebsite]
+    : null,
+].filter(Boolean);
 ---
 
-<section id="overview" class="scroll-mt-24">
-  <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-    <div>
-      <p class="text-sm font-medium text-muted-foreground">Profile</p>
-      <h2 class="text-2xl font-semibold">Overview</h2>
-    </div>
-    <p class="text-sm text-muted-foreground">
-      Source-backed facts for this organization.
-    </p>
-  </div>
+<section
+  id="overview"
+  class="scroll-mt-24"
+  aria-labelledby="overview-title"
+>
+  <h2 id="overview-title" class="mb-4 flex items-center gap-2 text-2xl font-semibold">
+    <Landmark class="size-6" aria-hidden="true" />
+    Overview
+  </h2>
 
-  <div class="grid items-start gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-    <article class="card">
-      <header>
-        <h3 class="text-xl font-semibold">Organization summary</h3>
-      </header>
-      <section>
-        <p class="leading-7 text-muted-foreground">
-          {organization.officialName} is a {organization.organizationType} profile
-          in {organization.stateCode}. This page is organized around the core
-          public-sector workflows Muniwork will track for each organization:
-          jobs, procurement, and meetings.
-        </p>
-      </section>
-    </article>
+  <article class="card">
+    <section>
+      <p class="text-lg leading-8 text-muted-foreground">
+        {overviewIntro}
+      </p>
 
-    <dl class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-      {facts.map(([label, value]) => (
-        <div class="card" data-size="sm">
-          <section>
-            <dt class="text-xs font-medium uppercase text-muted-foreground">
-              {label}
-            </dt>
-            <dd class="mt-2 text-base font-semibold">{value}</dd>
-          </section>
-        </div>
-      ))}
-    </dl>
-  </div>
+      <dl class="mt-8 grid gap-6 border-t pt-6 sm:grid-cols-3">
+        {
+          overviewDetails.map((detail) => {
+            const [label, value, href] = detail as [string, string, string?];
+
+            return (
+              <div>
+                <dt class="text-sm font-semibold">{label}</dt>
+                <dd class="mt-2 text-sm text-muted-foreground">
+                  {href ? (
+                    <a
+                      class="underline-offset-4 hover:text-foreground hover:underline"
+                      href={href}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      {value}
+                      <ExternalLink class="ml-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
+                    </a>
+                  ) : (
+                    value
+                  )}
+                </dd>
+              </div>
+            );
+          })
+        }
+      </dl>
+    </section>
+  </article>
 </section>

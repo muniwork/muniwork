@@ -1,36 +1,43 @@
 ---
+import {
+  BriefcaseBusiness,
+  CalendarDays,
+  FileText,
+  Landmark,
+  type AstroComponent,
+} from '@lucide/astro';
+
 const { organization } = Astro.props;
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 
-const sections = [
-  ['Overview', `/${organization.slug}`],
-  ['Careers', `/${organization.slug}/careers`],
-  ['Procurement', `/${organization.slug}/procurement`],
-  ['Meetings', `/${organization.slug}/meetings`],
+const sections: [string, string, AstroComponent][] = [
+  ['Overview', `/${organization.slug}`, Landmark],
+  ['Careers', `/${organization.slug}/careers`, BriefcaseBusiness],
+  ['Procurement', `/${organization.slug}/procurement`, FileText],
+  ['Meetings', `/${organization.slug}/meetings`, CalendarDays],
 ];
 ---
 
-<div class="sticky top-0 z-10 border-b bg-background/95">
-  <div class="tabs mx-auto max-w-7xl overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">
-    <nav
-      aria-label="Organization profile sections"
-      role="tablist"
-      data-variant="line"
-    >
-      {sections.map(([section, href]) => {
-        const isCurrent = currentPath === href;
+<div class="tabs overflow-x-auto py-3">
+  <nav
+    aria-label="Organization profile sections"
+    role="tablist"
+    data-variant="line"
+  >
+    {sections.map(([section, href, Icon]) => {
+      const isCurrent = currentPath === href;
 
-        return (
-          <a
-            role="tab"
-            aria-selected={isCurrent ? 'true' : 'false'}
-            aria-current={isCurrent ? 'page' : undefined}
-            href={href}
-          >
-            {section}
-          </a>
-        );
-      })}
-    </nav>
-  </div>
+      return (
+        <a
+          role="tab"
+          aria-selected={isCurrent ? 'true' : 'false'}
+          aria-current={isCurrent ? 'page' : undefined}
+          href={href}
+        >
+          <Icon class="size-4" aria-hidden="true" />
+          {section}
+        </a>
+      );
+    })}
+  </nav>
 </div>

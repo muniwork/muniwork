@@ -1,6 +1,9 @@
 ---
+import { CalendarDays, FileText } from '@lucide/astro';
+
 const { title, label, body, metrics = [] } = Astro.props;
 const typedMetrics = metrics as [string, string][];
+const Icon = title === 'Meetings' ? CalendarDays : FileText;
 ---
 
 <section class="scroll-mt-24">
@@ -8,7 +11,10 @@ const typedMetrics = metrics as [string, string][];
     <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
       <div>
         <p class="text-sm font-medium text-muted-foreground">{label}</p>
-        <h2 class="text-2xl font-semibold">{title}</h2>
+        <h2 class="flex items-center gap-2 text-2xl font-semibold">
+          <Icon class="size-6" aria-hidden="true" />
+          {title}
+        </h2>
       </div>
       <p class="badge" data-variant="outline">Not loaded</p>
     </header>
