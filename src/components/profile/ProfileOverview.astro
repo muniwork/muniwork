@@ -1,7 +1,8 @@
 ---
-import { ExternalLink } from '@lucide/astro';
+import { formatStateName, formatWebsiteHost } from '../../lib/formatters';
 
 const { organization } = Astro.props;
+const stateName = formatStateName(organization.stateCode);
 
 const governanceIntroBySlug: Record<string, string> = {
   'boca-raton-fl':
@@ -10,7 +11,7 @@ const governanceIntroBySlug: Record<string, string> = {
 
 const overviewIntro =
   governanceIntroBySlug[organization.slug] ??
-  `${organization.officialName} is a ${organization.organizationType} profile in ${organization.stateCode}. This page is organized around the core public-sector workflows Muniwork will track for each organization: jobs, procurement, and meetings.`;
+  `${organization.officialName} is a ${organization.organizationType} profile in ${stateName}. This page is organized around the core public-sector workflows Muniwork will track for each organization: careers, procurement, and meetings.`;
 
 function formatOrganizationType(value: string | null | undefined): string {
   if (!value) {
@@ -26,9 +27,9 @@ function formatOrganizationType(value: string | null | undefined): string {
 
 const overviewDetails = [
   ['Type', formatOrganizationType(organization.organizationType)],
-  ['State', organization.stateCode],
+  ['State', stateName],
   organization.officialWebsite
-    ? ['Website', 'Official website', organization.officialWebsite]
+    ? ['Website', formatWebsiteHost(organization.officialWebsite), organization.officialWebsite]
     : null,
 ].filter(Boolean);
 ---
@@ -44,7 +45,7 @@ const overviewDetails = [
     </header>
 
     <section>
-      <p class="text-lg leading-8 text-muted-foreground">
+      <p class="leading-7 text-muted-foreground">
         {overviewIntro}
       </p>
 
@@ -65,7 +66,6 @@ const overviewDetails = [
                       target="_blank"
                     >
                       {value}
-                      <ExternalLink class="ml-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
                     </a>
                   ) : (
                     value
