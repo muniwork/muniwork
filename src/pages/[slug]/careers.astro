@@ -38,7 +38,7 @@ if (missingSupabaseVariables.length > 0) {
 {missingSupabaseVariables.length > 0 ? (
   <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
 ) : organization ? (
-  <ProfileShell organization={organization}>
+  <ProfileShell organization={organization} totalOpenJobs={totalOpenJobs}>
     <ProfileCareersList openJobs={openJobs} totalOpenJobs={totalOpenJobs} />
   </ProfileShell>
 ) : (

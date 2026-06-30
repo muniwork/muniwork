@@ -1,6 +1,4 @@
 ---
-import { ExternalLink } from '@lucide/astro';
-
 import type { OpenJob } from '../../lib/jobs';
 
 const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
@@ -23,20 +21,26 @@ function formatDate(value: string | null | undefined): string | null {
 
 function formatOpenJobsSummary() {
   if (totalOpenJobs === 0) {
-    return 'No open jobs';
+    return '0';
   }
 
-  return `${totalOpenJobs} open ${totalOpenJobs === 1 ? 'job' : 'jobs'}`;
+  return totalOpenJobs.toLocaleString();
 }
 ---
 
 <section id="careers" class="scroll-mt-24">
   <article class="card">
     <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-      <h2 class="text-2xl font-semibold">Careers</h2>
-      <p class="badge" data-variant={hasOpenJobs ? 'outline' : 'secondary'}>
-        {formatOpenJobsSummary()}
-      </p>
+      <div class="flex items-center gap-1.5">
+        <h2 class="text-2xl font-semibold">Careers</h2>
+        <p
+          class="badge min-w-5 justify-center px-1.5"
+          data-variant={hasOpenJobs ? 'outline' : 'secondary'}
+          aria-label={`${formatOpenJobsSummary()} available careers`}
+        >
+          {formatOpenJobsSummary()}
+        </p>
+      </div>
     </header>
 
     <section>
@@ -54,7 +58,6 @@ function formatOpenJobsSummary() {
                       rel="noreferrer"
                     >
                       {job.title}
-                      <ExternalLink class="ml-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
                     </a>
                   ) : (
                     job.title
@@ -91,9 +94,9 @@ function formatOpenJobsSummary() {
       ) : (
         <div class="alert">
           <div>
-            <strong>No open jobs found</strong>
+            <strong>No open careers found</strong>
             <p>
-              Muniwork does not currently have open public job postings for
+              Muniwork does not currently have open public career postings for
               this organization.
             </p>
           </div>

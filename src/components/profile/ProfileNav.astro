@@ -1,5 +1,6 @@
 ---
 const { organization } = Astro.props;
+const totalOpenJobs = Astro.props.totalOpenJobs ?? 0;
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 const sections = [
@@ -8,10 +9,13 @@ const sections = [
   ['Procurement', `/${organization.slug}/procurement`],
   ['Meetings', `/${organization.slug}/meetings`],
 ];
+
+const formattedOpenJobs = Number(totalOpenJobs).toLocaleString();
 ---
 
 <div class="tabs overflow-x-auto py-3">
   <nav
+    class="[&_[role=tab]]:px-4 sm:[&_[role=tab]]:px-5"
     aria-label="Organization profile sections"
     role="tablist"
     data-variant="line"
@@ -26,7 +30,18 @@ const sections = [
           aria-current={isCurrent ? 'page' : undefined}
           href={href}
         >
-          {section}
+          <span class="inline-flex items-center gap-1.5">
+            {section}
+            {section === 'Careers' && (
+              <span
+                class="badge min-w-5 justify-center px-1.5"
+                data-variant={totalOpenJobs > 0 ? 'outline' : 'secondary'}
+                aria-label={`${formattedOpenJobs} available careers`}
+              >
+                {formattedOpenJobs}
+              </span>
+            )}
+          </span>
         </a>
       );
     })}

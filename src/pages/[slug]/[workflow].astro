@@ -20,12 +20,14 @@ const { slug, workflow } = Astro.params;
 const workflowSections = profileWorkflowSections as Record<string, WorkflowSection>;
 const section = workflow ? workflowSections[workflow] : null;
 let organization = null;
+let totalOpenJobs = 0;
 let missingSupabaseVariables = [];
 
 try {
   if (section) {
-    const profile = await getOrganizationProfileBySlug(slug, { jobLimit: 0 });
+    const profile = await getOrganizationProfileBySlug(slug, { jobLimit: 1 });
     organization = profile.organization;
+    totalOpenJobs = profile.totalOpenJobs;
   }
 } catch (error) {
   if (!(error instanceof MissingSupabaseEnvError)) {
@@ -45,7 +47,7 @@ if (missingSupabaseVariables.length > 0) {
 {missingSupabaseVariables.length > 0 ? (
   <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
 ) : section && organization ? (
-  <ProfileShell organization={organization}>
+  <ProfileShell organization={organization} totalOpenJobs={totalOpenJobs}>
     <ProfilePlaceholderSection
       title={section.title}
       label={section.label}

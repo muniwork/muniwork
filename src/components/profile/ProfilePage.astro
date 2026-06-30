@@ -10,7 +10,7 @@ const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
 const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
 ---
 
-<ProfileShell organization={organization}>
+<ProfileShell organization={organization} totalOpenJobs={totalOpenJobs}>
   <div class="grid gap-10">
     <ProfileOverview organization={organization} />
     <ProfileCareersList
