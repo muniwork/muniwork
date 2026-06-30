@@ -1,0 +1,70 @@
+---
+export const prerender = false;
+
+import ProfilePlaceholderSection from '../../components/profile/ProfilePlaceholderSection.astro';
+import ProfileShell from '../../components/profile/ProfileShell.astro';
+import SupabaseSetupNotice from '../../components/system/SupabaseSetupNotice.astro';
+import { getOrganizationProfileBySlug } from '../../lib/profile';
+import { profileWorkflowSections } from '../../lib/profile-sections.js';
+import { MissingSupabaseEnvError } from '../../lib/supabase.js';
+import '../../styles/global.css';
+
+type WorkflowSection = {
+  title: string;
+  label: string;
+  body: string;
+  metrics: string[][];
+};
+
+const { slug, workflow } = Astro.params;
+const workflowSections = profileWorkflowSections as Record<string, WorkflowSection>;
+const section = workflow ? workflowSections[workflow] : null;
+let organization = null;
+let missingSupabaseVariables = [];
+
+try {
+  if (section) {
+    const profile = await getOrganizationProfileBySlug(slug, { jobLimit: 0 });
+    organization = profile.organization;
+  }
+} catch (error) {
+  if (!(error instanceof MissingSupabaseEnvError)) {
+    throw error;
+  }
+
+  missingSupabaseVariables = error.missingVariables;
+}
+
+if (missingSupabaseVariables.length > 0) {
+  Astro.response.status = 503;
+} else if (!section || !organization) {
+  Astro.response.status = 404;
+}
+---
+
+{missingSupabaseVariables.length > 0 ? (
+  <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
+) : section && organization ? (
+  <ProfileShell organization={organization}>
+    <ProfilePlaceholderSection
+      title={section.title}
+      label={section.label}
+      body={section.body}
+      metrics={section.metrics}
+    />
+  </ProfileShell>
+) : (
+  <main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
+    <div class="mx-auto max-w-3xl">
+      <p class="badge" data-variant="outline">
+        Not found
+      </p>
+      <h1 class="mt-3 text-4xl font-semibold leading-none sm:text-5xl">
+        Organization section not found
+      </h1>
+      <p class="mt-3 leading-7 text-muted-foreground">
+        There is no organization profile section for this URL.
+      </p>
+    </div>
+  </main>
+)}

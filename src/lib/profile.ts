@@ -34,6 +34,14 @@ export async function getOrganizationProfileBySlug(
     };
   }
 
+  if (jobLimit <= 0) {
+    return {
+      organization,
+      openJobs: [],
+      totalOpenJobs: 0,
+    };
+  }
+
   const jobsResult = await getOpenJobsByOrganizationId(organization.id, { limit: jobLimit });
 
   return {
