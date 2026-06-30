@@ -3,7 +3,23 @@ import ProfileHeader from './ProfileHeader.astro';
 import ProfileMapCover from './ProfileMapCover.astro';
 import ProfileSections from './ProfileSections.astro';
 
+type OpenJob = {
+  id: string;
+  title: string;
+  department?: string | null;
+  location?: string | null;
+  employmentType?: string | null;
+  postedAt?: string | null;
+  closesAt?: string | null;
+  applyUrl?: string | null;
+  status: string;
+  firstSeenAt?: string | null;
+  lastSeenAt?: string | null;
+};
+
 const { organization } = Astro.props;
+const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
+const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
 
 const sections = ['Overview', 'Careers', 'Procurement', 'Meetings'];
 ---
@@ -35,7 +51,11 @@ const sections = ['Overview', 'Careers', 'Procurement', 'Meetings'];
   </div>
 
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-    <ProfileSections organization={organization} />
+    <ProfileSections
+      organization={organization}
+      openJobs={openJobs}
+      totalOpenJobs={totalOpenJobs}
+    />
   </div>
 
   <footer class="border-t px-4 py-5 text-center text-xs text-muted-foreground sm:px-6 lg:px-8">

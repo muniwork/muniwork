@@ -1,6 +1,65 @@
 ---
 const { organization } = Astro.props;
 
+type OpenJob = {
+  id: string;
+  title: string;
+  department?: string | null;
+  location?: string | null;
+  employmentType?: string | null;
+  postedAt?: string | null;
+  closesAt?: string | null;
+  applyUrl?: string | null;
+  status: string;
+  firstSeenAt?: string | null;
+  lastSeenAt?: string | null;
+};
+
+const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
+const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
+const visibleJobCount = openJobs.length;
+const hasOpenJobs = visibleJobCount > 0;
+
+function findLatestSeenAt(jobs: OpenJob[]): string | null {
+  return jobs.reduce<string | null>((latest, job) => {
+    if (!job.lastSeenAt) {
+      return latest;
+    }
+
+    if (!latest || new Date(job.lastSeenAt) > new Date(latest)) {
+      return job.lastSeenAt;
+    }
+
+    return latest;
+  }, null);
+}
+
+const latestSeenAt = findLatestSeenAt(openJobs);
+
+function formatDate(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(value));
+}
+
+function formatOpenJobsSummary() {
+  if (totalOpenJobs === 0) {
+    return 'No open jobs';
+  }
+
+  if (totalOpenJobs > visibleJobCount) {
+    return `${visibleJobCount} of ${totalOpenJobs} open jobs`;
+  }
+
+  return `${totalOpenJobs} open ${totalOpenJobs === 1 ? 'job' : 'jobs'}`;
+}
+
 const facts = [
   ['Organization type', organization.organizationType],
   ['State', organization.stateCode],
@@ -82,7 +141,9 @@ const pipelineSections = [
         <p class="text-sm font-medium text-muted-foreground">Hiring</p>
         <h2 class="text-2xl font-semibold">Careers</h2>
       </div>
-      <p class="badge" data-variant="secondary">Jobs data pending</p>
+      <p class="badge" data-variant={hasOpenJobs ? 'outline' : 'secondary'}>
+        {formatOpenJobsSummary()}
+      </p>
     </div>
 
     <div class="grid items-start gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.55fr)]">
@@ -94,18 +155,65 @@ const pipelineSections = [
               Public job postings for this organization.
             </p>
           </div>
-          <p class="badge" data-variant="outline">0 loaded</p>
+          <p class="badge" data-variant="outline">{visibleJobCount} loaded</p>
         </header>
         <section>
-          <div class="alert">
-            <div>
-              <strong>No jobs loaded yet</strong>
-              <p>
-                Careers will become the primary activity section once job postings
-                are populated for this organization.
-              </p>
+          {hasOpenJobs ? (
+            <div class="grid divide-y">
+              {openJobs.map((job) => (
+                <article class="grid gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <div class="min-w-0">
+                    <h4 class="text-base font-semibold leading-6">
+                      {job.applyUrl ? (
+                        <a
+                          class="underline-offset-4 hover:underline"
+                          href={job.applyUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {job.title}
+                        </a>
+                      ) : (
+                        job.title
+                      )}
+                    </h4>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                      {[job.department, job.location].filter(Boolean).join(' / ')}
+                    </p>
+                  </div>
+                  <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
+                    {formatDate(job.postedAt) && (
+                      <p>
+                        <span class="font-medium text-foreground">Posted</span>{' '}
+                        {formatDate(job.postedAt)}
+                      </p>
+                    )}
+                    {formatDate(job.closesAt) && (
+                      <p>
+                        <span class="font-medium text-foreground">Closes</span>{' '}
+                        {formatDate(job.closesAt)}
+                      </p>
+                    )}
+                  </div>
+                </article>
+              ))}
+              {totalOpenJobs > visibleJobCount && (
+                <p class="pt-4 text-sm text-muted-foreground">
+                  Showing the most recent {visibleJobCount} open jobs.
+                </p>
+              )}
             </div>
-          </div>
+          ) : (
+            <div class="alert">
+              <div>
+                <strong>No open jobs found</strong>
+                <p>
+                  Muniwork does not currently have open public job postings for
+                  this organization.
+                </p>
+              </div>
+            </div>
+          )}
         </section>
       </article>
 
@@ -113,19 +221,19 @@ const pipelineSections = [
         <article class="card" data-size="sm">
           <section>
             <p class="text-xs font-medium uppercase text-muted-foreground">Open roles</p>
-            <p class="mt-2 text-2xl font-semibold">0</p>
+            <p class="mt-2 text-2xl font-semibold">{totalOpenJobs}</p>
           </section>
         </article>
         <article class="card" data-size="sm">
           <section>
-            <p class="text-xs font-medium uppercase text-muted-foreground">Departments</p>
-            <p class="mt-2 text-2xl font-semibold">-</p>
+            <p class="text-xs font-medium uppercase text-muted-foreground">Loaded roles</p>
+            <p class="mt-2 text-2xl font-semibold">{visibleJobCount}</p>
           </section>
         </article>
         <article class="card" data-size="sm">
           <section>
             <p class="text-xs font-medium uppercase text-muted-foreground">Last refresh</p>
-            <p class="mt-2 text-base font-semibold">Not available</p>
+            <p class="mt-2 text-base font-semibold">{formatDate(latestSeenAt) ?? 'Not available'}</p>
           </section>
         </article>
       </div>
