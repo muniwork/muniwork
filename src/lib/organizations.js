@@ -75,6 +75,7 @@ export async function getOpenJobsByOrganizationId(organizationId, { limit = 25 }
     .eq('status', 'open')
     .order('posted_at', { ascending: false, nullsFirst: false })
     .order('last_seen_at', { ascending: false })
+    .order('title', { ascending: true })
     .limit(limit);
 
   if (error) {

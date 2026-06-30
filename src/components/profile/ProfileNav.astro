@@ -1,0 +1,28 @@
+---
+const { organization } = Astro.props;
+
+const sections = [
+  ['Overview', `/${organization.slug}`],
+  ['Careers', `/${organization.slug}/careers`],
+  ['Procurement', `/${organization.slug}#procurement`],
+  ['Meetings', `/${organization.slug}#meetings`],
+];
+---
+
+<div class="sticky top-0 z-10 border-b bg-background/95">
+  <nav
+    aria-label="Organization profile sections"
+    class="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8"
+  >
+    {sections.map(([section, href]) => (
+      <a
+        class="btn shrink-0"
+        data-size="sm"
+        data-variant="ghost"
+        href={href}
+      >
+        {section}
+      </a>
+    ))}
+  </nav>
+</div>

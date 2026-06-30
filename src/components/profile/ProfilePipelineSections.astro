@@ -1,0 +1,53 @@
+---
+const pipelineSections = [
+  {
+    id: 'procurement',
+    title: 'Procurement',
+    label: 'Purchasing',
+    body:
+      'Bid notices, purchasing links, contract opportunities, and vendor-facing documents for this organization.',
+    metrics: [
+      ['Open bids', 'Not loaded'],
+      ['Source status', 'Unconnected'],
+    ],
+  },
+  {
+    id: 'meetings',
+    title: 'Meetings',
+    label: 'Public records',
+    body:
+      'Meeting calendars, agendas, minutes, and recent public decisions for this organization.',
+    metrics: [
+      ['Upcoming meetings', 'Not loaded'],
+      ['Recent records', 'Unconnected'],
+    ],
+  },
+];
+---
+
+<section class="grid gap-4 lg:grid-cols-2">
+  {pipelineSections.map((section) => (
+    <article id={section.id} class="card scroll-mt-24">
+      <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p class="text-sm font-medium text-muted-foreground">{section.label}</p>
+          <h2 class="text-2xl font-semibold">{section.title}</h2>
+        </div>
+        <p class="badge" data-variant="outline">Not loaded</p>
+      </header>
+      <section class="grid gap-5">
+        <p class="leading-7 text-muted-foreground">{section.body}</p>
+        <dl class="grid gap-3 sm:grid-cols-2">
+          {section.metrics.map(([label, value]) => (
+            <div>
+              <dt class="text-xs font-medium uppercase text-muted-foreground">
+                {label}
+              </dt>
+              <dd class="mt-2 text-base font-semibold">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    </article>
+  ))}
+</section>

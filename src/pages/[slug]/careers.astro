@@ -1,11 +1,12 @@
 ---
 export const prerender = false;
 
-import ProfilePage from '../components/profile/ProfilePage.astro';
-import SupabaseSetupNotice from '../components/system/SupabaseSetupNotice.astro';
-import { getOpenJobsByOrganizationId, getOrganizationBySlug } from '../lib/organizations.js';
-import { MissingSupabaseEnvError } from '../lib/supabase.js';
-import '../styles/global.css';
+import ProfileCareersList from '../../components/profile/ProfileCareersList.astro';
+import ProfileShell from '../../components/profile/ProfileShell.astro';
+import SupabaseSetupNotice from '../../components/system/SupabaseSetupNotice.astro';
+import { getOpenJobsByOrganizationId, getOrganizationBySlug } from '../../lib/organizations.js';
+import { MissingSupabaseEnvError } from '../../lib/supabase.js';
+import '../../styles/global.css';
 
 type OpenJob = {
   id: string;
@@ -31,7 +32,7 @@ try {
   organization = await getOrganizationBySlug(slug);
 
   if (organization) {
-    const jobsResult = await getOpenJobsByOrganizationId(organization.id, { limit: 5 });
+    const jobsResult = await getOpenJobsByOrganizationId(organization.id, { limit: 100 });
     openJobs = jobsResult.jobs;
     totalOpenJobs = jobsResult.total;
   }
@@ -53,7 +54,9 @@ if (missingSupabaseVariables.length > 0) {
 {missingSupabaseVariables.length > 0 ? (
   <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
 ) : organization ? (
-  <ProfilePage organization={organization} openJobs={openJobs} totalOpenJobs={totalOpenJobs} />
+  <ProfileShell organization={organization}>
+    <ProfileCareersList openJobs={openJobs} totalOpenJobs={totalOpenJobs} />
+  </ProfileShell>
 ) : (
   <main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
     <div class="mx-auto max-w-3xl">

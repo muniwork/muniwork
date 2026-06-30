@@ -1,0 +1,113 @@
+---
+type OpenJob = {
+  id: string;
+  title: string;
+  department?: string | null;
+  location?: string | null;
+  employmentType?: string | null;
+  postedAt?: string | null;
+  closesAt?: string | null;
+  applyUrl?: string | null;
+  status: string;
+  firstSeenAt?: string | null;
+  lastSeenAt?: string | null;
+};
+
+const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
+const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
+const careersHref = Astro.props.careersHref as string | undefined;
+const visibleJobCount = openJobs.length;
+const hasOpenJobs = visibleJobCount > 0;
+
+function formatDate(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(value));
+}
+
+function formatOpenJobsSummary() {
+  if (totalOpenJobs === 0) {
+    return 'No open jobs';
+  }
+
+  return `${totalOpenJobs} open ${totalOpenJobs === 1 ? 'job' : 'jobs'}`;
+}
+---
+
+<section id="careers" class="scroll-mt-24">
+  <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <h2 class="text-2xl font-semibold">Careers</h2>
+    <p class="badge" data-variant={hasOpenJobs ? 'outline' : 'secondary'}>
+      {formatOpenJobsSummary()}
+    </p>
+  </div>
+
+  <article class="card">
+    <section>
+      {hasOpenJobs ? (
+        <div class="grid divide-y">
+          {openJobs.map((job) => (
+            <article class="grid gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_auto]">
+              <div class="min-w-0">
+                <h3 class="text-base font-semibold leading-6">
+                  {job.applyUrl ? (
+                    <a
+                      class="underline-offset-4 hover:underline"
+                      href={job.applyUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {job.title}
+                    </a>
+                  ) : (
+                    job.title
+                  )}
+                </h3>
+                <p class="mt-1 text-sm text-muted-foreground">
+                  {[job.department, job.location].filter(Boolean).join(' / ')}
+                </p>
+              </div>
+              <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
+                {formatDate(job.postedAt) && (
+                  <p>
+                    <span class="font-medium text-foreground">Posted</span>{' '}
+                    {formatDate(job.postedAt)}
+                  </p>
+                )}
+                {formatDate(job.closesAt) && (
+                  <p>
+                    <span class="font-medium text-foreground">Closes</span>{' '}
+                    {formatDate(job.closesAt)}
+                  </p>
+                )}
+              </div>
+            </article>
+          ))}
+          {careersHref && totalOpenJobs > visibleJobCount && (
+            <div class="pt-4">
+              <a class="btn" data-variant="outline" href={careersHref}>
+                View all careers
+              </a>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div class="alert">
+          <div>
+            <strong>No open jobs found</strong>
+            <p>
+              Muniwork does not currently have open public job postings for
+              this organization.
+            </p>
+          </div>
+        </div>
+      )}
+    </section>
+  </article>
+</section>
