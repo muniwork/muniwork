@@ -4,6 +4,7 @@ export const prerender = false;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProfilePage from '../components/profile/ProfilePage.astro';
 import SupabaseSetupNotice from '../components/system/SupabaseSetupNotice.astro';
+import type { OpenBid } from '../lib/bids';
 import type { OpenJob } from '../lib/jobs';
 import { getOrganizationProfileBySlug } from '../lib/profile';
 import { MissingSupabaseEnvError } from '../lib/supabase.js';
@@ -13,13 +14,17 @@ const { slug } = Astro.params;
 let organization = null;
 let openJobs: OpenJob[] = [];
 let totalOpenJobs = 0;
+let openBids: OpenBid[] = [];
+let totalOpenBids = 0;
 let missingSupabaseVariables = [];
 
 try {
-  const profile = await getOrganizationProfileBySlug(slug, { jobLimit: 5 });
+  const profile = await getOrganizationProfileBySlug(slug, { bidLimit: 5, jobLimit: 5 });
   organization = profile.organization;
   openJobs = profile.openJobs;
   totalOpenJobs = profile.totalOpenJobs;
+  openBids = profile.openBids;
+  totalOpenBids = profile.totalOpenBids;
 } catch (error) {
   if (!(error instanceof MissingSupabaseEnvError)) {
     throw error;
@@ -48,7 +53,13 @@ const pageDescription = organization
   {missingSupabaseVariables.length > 0 ? (
     <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
   ) : organization ? (
-    <ProfilePage organization={organization} openJobs={openJobs} totalOpenJobs={totalOpenJobs} />
+    <ProfilePage
+      organization={organization}
+      openJobs={openJobs}
+      totalOpenJobs={totalOpenJobs}
+      openBids={openBids}
+      totalOpenBids={totalOpenBids}
+    />
   ) : (
     <main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
       <div class="mx-auto max-w-3xl">

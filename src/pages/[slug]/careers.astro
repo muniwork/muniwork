@@ -14,13 +14,15 @@ const { slug } = Astro.params;
 let organization = null;
 let openJobs: OpenJob[] = [];
 let totalOpenJobs = 0;
+let totalOpenBids = 0;
 let missingSupabaseVariables = [];
 
 try {
-  const profile = await getOrganizationProfileBySlug(slug, { jobLimit: 100 });
+  const profile = await getOrganizationProfileBySlug(slug, { bidLimit: 1, jobLimit: 100 });
   organization = profile.organization;
   openJobs = profile.openJobs;
   totalOpenJobs = profile.totalOpenJobs;
+  totalOpenBids = profile.totalOpenBids;
 } catch (error) {
   if (!(error instanceof MissingSupabaseEnvError)) {
     throw error;
@@ -49,7 +51,11 @@ const pageDescription = organization
   {missingSupabaseVariables.length > 0 ? (
     <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
   ) : organization ? (
-    <ProfileShell organization={organization} totalOpenJobs={totalOpenJobs}>
+    <ProfileShell
+      organization={organization}
+      totalOpenJobs={totalOpenJobs}
+      totalOpenBids={totalOpenBids}
+    >
       <ProfileCareersList
         openJobs={openJobs}
         totalOpenJobs={totalOpenJobs}

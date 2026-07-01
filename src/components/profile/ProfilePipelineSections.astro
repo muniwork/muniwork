@@ -2,7 +2,7 @@
 import ProfilePlaceholderSection from './ProfilePlaceholderSection.astro';
 import { profileWorkflowSections } from '../../lib/profile-sections.js';
 
-const pipelineSections = Object.entries(profileWorkflowSections);
+const pipelineSections = Object.entries(profileWorkflowSections).filter(([id]) => id !== 'procurement');
 ---
 
 <section class="grid gap-4 lg:grid-cols-2">

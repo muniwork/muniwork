@@ -2,36 +2,27 @@
 export const prerender = false;
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ProfilePlaceholderSection from '../../components/profile/ProfilePlaceholderSection.astro';
+import ProfileProcurementList from '../../components/profile/ProfileProcurementList.astro';
 import ProfileShell from '../../components/profile/ProfileShell.astro';
 import SupabaseSetupNotice from '../../components/system/SupabaseSetupNotice.astro';
+import type { OpenBid } from '../../lib/bids';
 import { getOrganizationProfileBySlug } from '../../lib/profile';
-import { profileWorkflowSections } from '../../lib/profile-sections.js';
 import { MissingSupabaseEnvError } from '../../lib/supabase.js';
 import '../../styles/global.css';
 
-type WorkflowSection = {
-  title: string;
-  label: string;
-  body: string;
-  metrics: string[][];
-};
-
-const { slug, workflow } = Astro.params;
-const workflowSections = profileWorkflowSections as Record<string, WorkflowSection>;
-const section = workflow ? workflowSections[workflow] : null;
+const { slug } = Astro.params;
 let organization = null;
-let totalOpenJobs = 0;
+let openBids: OpenBid[] = [];
 let totalOpenBids = 0;
+let totalOpenJobs = 0;
 let missingSupabaseVariables = [];
 
 try {
-  if (section) {
-    const profile = await getOrganizationProfileBySlug(slug, { bidLimit: 1, jobLimit: 1 });
-    organization = profile.organization;
-    totalOpenJobs = profile.totalOpenJobs;
-    totalOpenBids = profile.totalOpenBids;
-  }
+  const profile = await getOrganizationProfileBySlug(slug, { bidLimit: 100, jobLimit: 1 });
+  organization = profile.organization;
+  openBids = profile.openBids;
+  totalOpenBids = profile.totalOpenBids;
+  totalOpenJobs = profile.totalOpenJobs;
 } catch (error) {
   if (!(error instanceof MissingSupabaseEnvError)) {
     throw error;
@@ -42,34 +33,32 @@ try {
 
 if (missingSupabaseVariables.length > 0) {
   Astro.response.status = 503;
-} else if (!section || !organization) {
+} else if (!organization) {
   Astro.response.status = 404;
 }
 
-const pageTitle = organization && section
-  ? `${section.title} for ${organization.officialName} | Muniwork`
+const pageTitle = organization
+  ? `${organization.officialName} procurement | Muniwork`
   : missingSupabaseVariables.length > 0
     ? 'Muniwork setup required'
-    : 'Organization section not found | Muniwork';
-const pageDescription = organization && section
-  ? `${section.body} ${organization.officialName}.`
-  : 'Muniwork profiles local government organizations and public-sector career opportunities.';
+    : 'Organization procurement not found | Muniwork';
+const pageDescription = organization
+  ? `Open bid opportunities and procurement notices for ${organization.officialName}.`
+  : 'Muniwork profiles local government organizations and public-sector procurement opportunities.';
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
   {missingSupabaseVariables.length > 0 ? (
     <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
-  ) : section && organization ? (
+  ) : organization ? (
     <ProfileShell
       organization={organization}
       totalOpenJobs={totalOpenJobs}
       totalOpenBids={totalOpenBids}
     >
-      <ProfilePlaceholderSection
-        title={section.title}
-        label={section.label}
-        body={section.body}
-        metrics={section.metrics}
+      <ProfileProcurementList
+        openBids={openBids}
+        totalOpenBids={totalOpenBids}
       />
     </ProfileShell>
   ) : (
@@ -79,10 +68,10 @@ const pageDescription = organization && section
           Not found
         </p>
         <h1 class="mt-3 text-4xl font-semibold leading-none sm:text-5xl">
-          Organization section not found
+          Organization not found
         </h1>
         <p class="mt-3 leading-7 text-muted-foreground">
-          There is no organization profile section for this URL.
+          There is no organization profile for this slug.
         </p>
       </div>
     </main>

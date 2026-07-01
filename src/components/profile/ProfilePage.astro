@@ -1,16 +1,24 @@
 ---
 import ProfileCareersList from './ProfileCareersList.astro';
+import ProfileProcurementList from './ProfileProcurementList.astro';
 import ProfilePipelineSections from './ProfilePipelineSections.astro';
 import ProfileOverview from './ProfileOverview.astro';
 import ProfileShell from './ProfileShell.astro';
+import type { OpenBid } from '../../lib/bids';
 import type { OpenJob } from '../../lib/jobs';
 
 const { organization } = Astro.props;
 const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
 const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
+const openBids = (Astro.props.openBids ?? []) as OpenBid[];
+const totalOpenBids = Astro.props.totalOpenBids ?? openBids.length;
 ---
 
-<ProfileShell organization={organization} totalOpenJobs={totalOpenJobs}>
+<ProfileShell
+  organization={organization}
+  totalOpenJobs={totalOpenJobs}
+  totalOpenBids={totalOpenBids}
+>
   <div class="grid gap-10">
     <ProfileOverview organization={organization} />
     <ProfileCareersList
@@ -18,6 +26,11 @@ const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
       totalOpenJobs={totalOpenJobs}
       careersHref={`/${organization.slug}/careers`}
       showPostedDates={false}
+    />
+    <ProfileProcurementList
+      openBids={openBids}
+      totalOpenBids={totalOpenBids}
+      procurementHref={`/${organization.slug}/procurement`}
     />
     <ProfilePipelineSections />
   </div>

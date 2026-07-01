@@ -1,0 +1,95 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import type { OpenBid } from '../../lib/bids';
+
+const openBids = (Astro.props.openBids ?? []) as OpenBid[];
+const totalOpenBids = Astro.props.totalOpenBids ?? openBids.length;
+const procurementHref = Astro.props.procurementHref as string | undefined;
+const visibleBidCount = openBids.length;
+const hasOpenBids = visibleBidCount > 0;
+
+function formatDate(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(value));
+}
+
+---
+
+<section id="procurement" class="scroll-mt-24">
+  <article class="card">
+    <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+      <h2 class="text-2xl font-semibold">Procurement</h2>
+    </header>
+
+    <section>
+      {hasOpenBids ? (
+        <div class="grid">
+          <div class="grid divide-y">
+            {openBids.map((bid) => (
+              <article class="grid gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_auto]">
+                <div class="min-w-0">
+                  <h3 class="text-base font-semibold leading-6">
+                    {bid.publicUrl ? (
+                      <a
+                        class="external-link underline-offset-4 hover:underline"
+                        href={bid.publicUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <span>{bid.title}</span>
+                        <ArrowUpRight aria-hidden="true" class="external-link__icon" />
+                      </a>
+                    ) : (
+                      bid.title
+                    )}
+                  </h3>
+                  {(bid.bidNumber || bid.bidType) && (
+                    <p class="mt-1 text-sm text-muted-foreground">
+                      {[bid.bidType, bid.bidNumber].filter(Boolean).join(' · ')}
+                    </p>
+                  )}
+                </div>
+                <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
+                  {formatDate(bid.closeAt) ? (
+                    <p>
+                      <span class="font-medium text-foreground">Closes</span>{' '}
+                      {formatDate(bid.closeAt)}
+                    </p>
+                  ) : (
+                    <p>
+                      <span class="font-medium text-foreground">Close date not listed</span>
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+          {procurementHref && totalOpenBids > visibleBidCount && (
+            <div class="flex justify-center pt-4">
+              <a class="btn" data-variant="outline" href={procurementHref}>
+                View all procurement
+              </a>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div class="alert">
+          <div>
+            <strong>No open bids found</strong>
+            <p>
+              Muniwork does not currently have open bid opportunities for this
+              organization.
+            </p>
+          </div>
+        </div>
+      )}
+    </section>
+  </article>
+</section>

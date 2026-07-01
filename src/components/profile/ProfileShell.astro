@@ -6,6 +6,7 @@ import SiteHeader from './SiteHeader.astro';
 
 const { organization } = Astro.props;
 const totalOpenJobs = Astro.props.totalOpenJobs ?? 0;
+const totalOpenBids = Astro.props.totalOpenBids ?? 0;
 ---
 
 <main class="min-h-screen bg-background text-foreground">
@@ -20,7 +21,11 @@ const totalOpenJobs = Astro.props.totalOpenJobs ?? 0;
 
   <div class="sticky top-0 z-20 border-y bg-background/95 backdrop-blur">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <ProfileNav organization={organization} totalOpenJobs={totalOpenJobs} />
+      <ProfileNav
+        organization={organization}
+        totalOpenJobs={totalOpenJobs}
+        totalOpenBids={totalOpenBids}
+      />
     </div>
   </div>
 

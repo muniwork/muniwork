@@ -1,0 +1,2 @@
+-- Recorded in production by the bids ingestion setup.
+-- Canonical migration SQL is tracked in muniwork-bids-ingestion.

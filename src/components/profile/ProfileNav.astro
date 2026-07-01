@@ -1,6 +1,7 @@
 ---
 const { organization } = Astro.props;
 const totalOpenJobs = Astro.props.totalOpenJobs ?? 0;
+const totalOpenBids = Astro.props.totalOpenBids ?? 0;
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 const sections = [
@@ -11,6 +12,7 @@ const sections = [
 ];
 
 const formattedOpenJobs = Number(totalOpenJobs).toLocaleString();
+const formattedOpenBids = Number(totalOpenBids).toLocaleString();
 ---
 
 <div class="tabs overflow-x-auto py-3">
@@ -36,6 +38,15 @@ const formattedOpenJobs = Number(totalOpenJobs).toLocaleString();
                 aria-label={`${formattedOpenJobs} available careers`}
               >
                 {formattedOpenJobs}
+              </span>
+            )}
+            {section === 'Procurement' && (
+              <span
+                class="badge min-w-5 justify-center px-1.5"
+                data-variant={totalOpenBids > 0 ? 'outline' : 'secondary'}
+                aria-label={`${formattedOpenBids} open bids`}
+              >
+                {formattedOpenBids}
               </span>
             )}
           </span>
