@@ -5,6 +5,7 @@ export type OrganizationProfile = {
   id: string;
   officialName: string;
   organizationType: string | null;
+  countyName: string | null;
   stateCode: string | null;
   officialWebsite: string | null;
   slug: string;

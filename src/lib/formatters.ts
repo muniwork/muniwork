@@ -62,6 +62,25 @@ export function formatStateName(stateCode: string | null | undefined): string {
   return STATE_NAMES_BY_CODE[normalizedCode] ?? stateCode;
 }
 
+export function formatCountyName(countyName: string | null | undefined): string {
+  if (!countyName) {
+    return 'Unknown';
+  }
+
+  return countyName
+    .trim()
+    .toLowerCase()
+    .split(/(\s+|-)/)
+    .map((part) => {
+      if (/^\s+$/.test(part) || part === '-') {
+        return part;
+      }
+
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    })
+    .join('');
+}
+
 export function formatWebsiteHost(url: string | null | undefined): string {
   if (!url) {
     return 'Not listed';

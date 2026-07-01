@@ -1,5 +1,5 @@
 ---
-import { formatStateName, formatWebsiteHost } from '../../lib/formatters';
+import { formatCountyName, formatStateName, formatWebsiteHost } from '../../lib/formatters';
 
 const { organization } = Astro.props;
 const stateName = formatStateName(organization.stateCode);
@@ -27,6 +27,7 @@ function formatOrganizationType(value: string | null | undefined): string {
 
 const overviewDetails = [
   ['Type', formatOrganizationType(organization.organizationType)],
+  organization.countyName ? ['County', formatCountyName(organization.countyName)] : null,
   ['State', stateName],
   organization.officialWebsite
     ? ['Website', formatWebsiteHost(organization.officialWebsite), organization.officialWebsite]
@@ -49,7 +50,7 @@ const overviewDetails = [
         {overviewIntro}
       </p>
 
-      <dl class="mt-8 grid gap-6 border-t pt-6 sm:grid-cols-3">
+      <dl class="mt-8 grid justify-items-center gap-6 border-t pt-6 sm:grid-cols-4">
         {
           overviewDetails.map((detail) => {
             const [label, value, href] = detail as [string, string, string?];

@@ -29,6 +29,7 @@ function normalizeOrganization(row) {
     id: row.id,
     officialName: row.official_name,
     organizationType: row.organization_type,
+    countyName: row.countyName ?? null,
     stateCode: row.state_code,
     officialWebsite: row.official_website,
     slug: row.slug,
@@ -38,6 +39,64 @@ function normalizeOrganization(row) {
     coverLocationLabel: row.cover_location_label,
     sealAsset: row.sealAsset ?? null,
   };
+}
+
+function normalizeCountyName(value) {
+  if (!value) {
+    return null;
+  }
+
+  const countyName = value.trim();
+
+  return countyName.length > 0 ? countyName : null;
+}
+
+async function getCountyNameForOrganization(supabase, organizationId) {
+  const { data: sources, error: sourcesError } = await supabase
+    .from('organization_sources')
+    .select('source_record_id, is_primary')
+    .eq('organization_id', organizationId)
+    .order('is_primary', { ascending: false })
+    .limit(5);
+
+  if (sourcesError) {
+    throw new Error(`Failed to load organization source ${organizationId}: ${sourcesError.message}`);
+  }
+
+  const censusIds = [
+    ...new Set(
+      (sources ?? [])
+        .map((source) => source.source_record_id?.trim())
+        .filter((sourceRecordId) => /^\d+$/.test(sourceRecordId ?? ''))
+    ),
+  ];
+
+  if (censusIds.length === 0) {
+    return null;
+  }
+
+  const { data: govUnits, error: govUnitsError } = await supabase
+    .from('gov_units_2025')
+    .select('CENSUS_ID_PID6, COUNTY_AREA_NAME')
+    .in('CENSUS_ID_PID6', censusIds);
+
+  if (govUnitsError) {
+    throw new Error(`Failed to load organization county ${organizationId}: ${govUnitsError.message}`);
+  }
+
+  const govUnitsByCensusId = new Map(
+    (govUnits ?? []).map((govUnit) => [String(govUnit.CENSUS_ID_PID6), govUnit])
+  );
+
+  for (const censusId of censusIds) {
+    const countyName = normalizeCountyName(govUnitsByCensusId.get(censusId)?.COUNTY_AREA_NAME);
+
+    if (countyName) {
+      return countyName;
+    }
+  }
+
+  return null;
 }
 
 export async function getOrganizationBySlug(slug) {
@@ -62,15 +121,18 @@ export async function getOrganizationBySlug(slug) {
     return null;
   }
 
-  const { data: sealAsset, error: sealAssetError } = await supabase
-    .from('organization_identity_assets')
-    .select(
-      'asset_type, storage_path, mime_type, source_url, source_asset_url, verification_status, usage_notes'
-    )
-    .eq('organization_id', data.id)
-    .eq('asset_type', 'seal')
-    .eq('is_primary', true)
-    .maybeSingle();
+  const [{ data: sealAsset, error: sealAssetError }, countyName] = await Promise.all([
+    supabase
+      .from('organization_identity_assets')
+      .select(
+        'asset_type, storage_path, mime_type, source_url, source_asset_url, verification_status, usage_notes'
+      )
+      .eq('organization_id', data.id)
+      .eq('asset_type', 'seal')
+      .eq('is_primary', true)
+      .maybeSingle(),
+    getCountyNameForOrganization(supabase, data.id),
+  ]);
 
   if (sealAssetError) {
     throw new Error(`Failed to load organization seal ${slug}: ${sealAssetError.message}`);
@@ -78,6 +140,7 @@ export async function getOrganizationBySlug(slug) {
 
   return normalizeOrganization({
     ...data,
+    countyName,
     sealAsset: normalizeIdentityAsset(sealAsset, supabase),
   });
 }
