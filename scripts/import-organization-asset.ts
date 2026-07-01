@@ -2,10 +2,12 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import sharp from 'sharp';
 import { getSupabaseServerClient } from '../src/lib/supabase.js';
 
 const BUCKET_NAME = 'organization-assets';
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+const SEAL_WEB_SIZE_PX = 128;
 const REQUIRED_ENV_VARIABLES = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 
 type Args = {
@@ -20,6 +22,22 @@ type Args = {
 type ImageFormat = {
   extension: 'jpg' | 'png' | 'svg' | 'webp';
   mimeType: 'image/jpeg' | 'image/png' | 'image/svg+xml' | 'image/webp';
+};
+
+type PreparedAsset = {
+  original: {
+    bytes: Buffer;
+    format: ImageFormat;
+    sha256: string;
+    storagePath: string;
+  };
+  primary: {
+    bytes: Buffer;
+    format: ImageFormat;
+    sha256: string;
+    storagePath: string;
+    variant: 'original' | 'web-128';
+  };
 };
 
 function loadDotEnv() {
@@ -276,6 +294,69 @@ async function uploadAsset(
   throw new Error(`Failed to upload asset: ${error.message}`);
 }
 
+async function prepareAsset(
+  organizationSlug: string,
+  assetType: string,
+  download: Awaited<ReturnType<typeof downloadAsset>>
+): Promise<PreparedAsset> {
+  const originalSha256 = createHash('sha256').update(download.bytes).digest('hex');
+  const originalStoragePath = `${organizationSlug}/${assetType}/original/${originalSha256}.${download.format.extension}`;
+  const original = {
+    bytes: download.bytes,
+    format: download.format,
+    sha256: originalSha256,
+    storagePath: originalStoragePath,
+  };
+
+  if (assetType !== 'seal' || download.format.extension === 'svg') {
+    return {
+      original,
+      primary: {
+        ...original,
+        variant: 'original',
+      },
+    };
+  }
+
+  const resized = sharp(download.bytes, { animated: false })
+    .rotate()
+    .resize({
+      width: SEAL_WEB_SIZE_PX,
+      height: SEAL_WEB_SIZE_PX,
+      fit: 'inside',
+      withoutEnlargement: true,
+    });
+  const candidates: Array<{ bytes: Buffer; format: ImageFormat }> = [
+    {
+      bytes: await resized.clone().webp({ quality: 90, effort: 6 }).toBuffer(),
+      format: { extension: 'webp', mimeType: 'image/webp' },
+    },
+    {
+      bytes: await resized.clone().webp({ quality: 80, effort: 6 }).toBuffer(),
+      format: { extension: 'webp', mimeType: 'image/webp' },
+    },
+    {
+      bytes: await resized.clone().png({ palette: true, quality: 90, compressionLevel: 9 }).toBuffer(),
+      format: { extension: 'png', mimeType: 'image/png' },
+    },
+  ];
+  const web = candidates.reduce((smallest, candidate) =>
+    candidate.bytes.byteLength < smallest.bytes.byteLength ? candidate : smallest
+  );
+  const webSha256 = createHash('sha256').update(web.bytes).digest('hex');
+
+  return {
+    original,
+    primary: {
+      bytes: web.bytes,
+      format: web.format,
+      sha256: webSha256,
+      storagePath: `${organizationSlug}/${assetType}/web-${SEAL_WEB_SIZE_PX}/${webSha256}.${web.format.extension}`,
+      variant: `web-${SEAL_WEB_SIZE_PX}`,
+    },
+  };
+}
+
 async function upsertIdentityAsset(
   client: ReturnType<typeof getSupabaseServerClient>,
   {
@@ -337,39 +418,52 @@ async function main() {
   const client = getSupabaseServerClient();
   const organization = await findOrganization(client, args.organizationSlug as string);
   const download = await downloadAsset(args.sourceAssetUrl as string);
-  const sha256 = createHash('sha256').update(download.bytes).digest('hex');
-  const storagePath = `${organization.slug}/${args.assetType}/${sha256}.${download.format.extension}`;
-  const publicUrl = client.storage.from(BUCKET_NAME).getPublicUrl(storagePath).data.publicUrl;
+  const prepared = await prepareAsset(organization.slug, args.assetType as string, download);
+  const publicUrl = client.storage.from(BUCKET_NAME).getPublicUrl(prepared.primary.storagePath)
+    .data.publicUrl;
 
   if (args.dryRun) {
     printResult({
       mode: 'dry-run',
       organization: organization.official_name,
       asset_type: args.assetType,
-      storage_path: storagePath,
-      sha256,
-      mime_type: download.format.mimeType,
-      size_bytes: download.bytes.byteLength,
+      primary_storage_path: prepared.primary.storagePath,
+      primary_variant: prepared.primary.variant,
+      primary_sha256: prepared.primary.sha256,
+      primary_mime_type: prepared.primary.format.mimeType,
+      primary_size_bytes: prepared.primary.bytes.byteLength,
+      original_storage_path: prepared.original.storagePath,
+      original_sha256: prepared.original.sha256,
+      original_mime_type: prepared.original.format.mimeType,
+      original_size_bytes: prepared.original.bytes.byteLength,
       source_final_url: download.finalUrl,
       public_url: publicUrl,
     });
     return;
   }
 
-  const uploadStatus = await uploadAsset(
+  const originalUploadStatus = await uploadAsset(
     client,
-    storagePath,
-    download.bytes,
-    download.format.mimeType
+    prepared.original.storagePath,
+    prepared.original.bytes,
+    prepared.original.format.mimeType
   );
+  const primaryUploadStatus = prepared.primary.storagePath === prepared.original.storagePath
+    ? originalUploadStatus
+    : await uploadAsset(
+        client,
+        prepared.primary.storagePath,
+        prepared.primary.bytes,
+        prepared.primary.format.mimeType
+      );
 
   await upsertIdentityAsset(client, {
     assetType: args.assetType as string,
-    mimeType: download.format.mimeType,
+    mimeType: prepared.primary.format.mimeType,
     organizationId: organization.id,
     sourceAssetUrl: args.sourceAssetUrl as string,
     sourceUrl: args.sourceUrl as string,
-    storagePath,
+    storagePath: prepared.primary.storagePath,
     usageNotes: args.usageNotes,
   });
 
@@ -377,11 +471,17 @@ async function main() {
     mode: 'write',
     organization: organization.official_name,
     asset_type: args.assetType,
-    storage_path: storagePath,
-    sha256,
-    mime_type: download.format.mimeType,
-    size_bytes: download.bytes.byteLength,
-    upload_status: uploadStatus,
+    primary_storage_path: prepared.primary.storagePath,
+    primary_variant: prepared.primary.variant,
+    primary_sha256: prepared.primary.sha256,
+    primary_mime_type: prepared.primary.format.mimeType,
+    primary_size_bytes: prepared.primary.bytes.byteLength,
+    primary_upload_status: primaryUploadStatus,
+    original_storage_path: prepared.original.storagePath,
+    original_sha256: prepared.original.sha256,
+    original_mime_type: prepared.original.format.mimeType,
+    original_size_bytes: prepared.original.bytes.byteLength,
+    original_upload_status: originalUploadStatus,
     public_url: publicUrl,
   });
 }
