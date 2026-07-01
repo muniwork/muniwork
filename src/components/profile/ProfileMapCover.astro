@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import {
   getMapboxStaticAccessToken,
   getMapboxStaticStyle,
@@ -39,12 +40,14 @@ const label = organization.coverLocationLabel || organization.officialName;
   class="absolute inset-0 h-full w-full overflow-hidden bg-muted"
 >
   {mapUrl ? (
-    <img
+    <Image
       alt=""
       class="h-full w-full object-cover opacity-80"
       decoding="async"
+      height={480}
       loading="eager"
       src={mapUrl}
+      width={2560}
     />
   ) : (
     <div class="h-full w-full bg-muted"></div>

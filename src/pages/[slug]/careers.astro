@@ -1,6 +1,7 @@
 ---
 export const prerender = false;
 
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProfileCareersList from '../../components/profile/ProfileCareersList.astro';
 import ProfileShell from '../../components/profile/ProfileShell.astro';
 import SupabaseSetupNotice from '../../components/system/SupabaseSetupNotice.astro';
@@ -33,30 +34,41 @@ if (missingSupabaseVariables.length > 0) {
 } else if (!organization) {
   Astro.response.status = 404;
 }
+
+const pageTitle = organization
+  ? `${organization.officialName} careers | Muniwork`
+  : missingSupabaseVariables.length > 0
+    ? 'Muniwork setup required'
+    : 'Organization careers not found | Muniwork';
+const pageDescription = organization
+  ? `Open public-sector jobs and career opportunities at ${organization.officialName}.`
+  : 'Muniwork profiles local government organizations and public-sector career opportunities.';
 ---
 
-{missingSupabaseVariables.length > 0 ? (
-  <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
-) : organization ? (
-  <ProfileShell organization={organization} totalOpenJobs={totalOpenJobs}>
-    <ProfileCareersList
-      openJobs={openJobs}
-      totalOpenJobs={totalOpenJobs}
-      showPostedDates={false}
-    />
-  </ProfileShell>
-) : (
-  <main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
-    <div class="mx-auto max-w-3xl">
-      <p class="badge" data-variant="outline">
-        Not found
-      </p>
-      <h1 class="mt-3 text-4xl font-semibold leading-none sm:text-5xl">
-        Organization not found
-      </h1>
-      <p class="mt-3 leading-7 text-muted-foreground">
-        There is no organization profile for this slug.
-      </p>
-    </div>
-  </main>
-)}
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {missingSupabaseVariables.length > 0 ? (
+    <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
+  ) : organization ? (
+    <ProfileShell organization={organization} totalOpenJobs={totalOpenJobs}>
+      <ProfileCareersList
+        openJobs={openJobs}
+        totalOpenJobs={totalOpenJobs}
+        showPostedDates={false}
+      />
+    </ProfileShell>
+  ) : (
+    <main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
+      <div class="mx-auto max-w-3xl">
+        <p class="badge" data-variant="outline">
+          Not found
+        </p>
+        <h1 class="mt-3 text-4xl font-semibold leading-none sm:text-5xl">
+          Organization not found
+        </h1>
+        <p class="mt-3 leading-7 text-muted-foreground">
+          There is no organization profile for this slug.
+        </p>
+      </div>
+    </main>
+  )}
+</BaseLayout>

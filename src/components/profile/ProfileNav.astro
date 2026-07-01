@@ -15,9 +15,8 @@ const formattedOpenJobs = Number(totalOpenJobs).toLocaleString();
 
 <div class="tabs overflow-x-auto py-3">
   <nav
-    class="[&_[role=tab]]:px-4 sm:[&_[role=tab]]:px-5"
+    class="[&_a]:px-4 sm:[&_a]:px-5"
     aria-label="Organization profile sections"
-    role="tablist"
     data-variant="line"
   >
     {sections.map(([section, href]) => {
@@ -25,8 +24,6 @@ const formattedOpenJobs = Number(totalOpenJobs).toLocaleString();
 
       return (
         <a
-          role="tab"
-          aria-selected={isCurrent ? 'true' : 'false'}
           aria-current={isCurrent ? 'page' : undefined}
           href={href}
         >

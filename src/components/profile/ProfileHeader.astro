@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { Landmark } from '@lucide/astro';
 
 const { organization } = Astro.props;
@@ -13,9 +14,11 @@ const sealAsset = organization.sealAsset;
     >
       {
         sealAsset ? (
-          <img
+          <Image
             src={sealAsset.publicUrl}
             alt={`${organization.officialName} seal`}
+            width={64}
+            height={64}
             class="size-12 object-contain sm:size-16"
             loading="eager"
             decoding="async"
