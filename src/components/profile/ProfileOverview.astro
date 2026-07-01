@@ -1,4 +1,5 @@
 ---
+import { ArrowUpRight } from '@lucide/astro';
 import { formatCountyName, formatStateName, formatWebsiteHost } from '../../lib/formatters';
 
 const { organization } = Astro.props;
@@ -61,12 +62,13 @@ const overviewDetails = [
                 <dd class="mt-2 text-sm text-muted-foreground">
                   {href ? (
                     <a
-                      class="underline-offset-4 hover:text-foreground hover:underline"
+                      class="external-link underline-offset-4 hover:text-foreground hover:underline"
                       href={href}
                       rel="noreferrer"
                       target="_blank"
                     >
-                      {value}
+                      <span>{value}</span>
+                      <ArrowUpRight aria-hidden="true" class="external-link__icon" />
                     </a>
                   ) : (
                     value

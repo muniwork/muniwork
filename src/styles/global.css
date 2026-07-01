@@ -13,3 +13,28 @@
     margin: 0;
   }
 }
+
+@layer components {
+  .external-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .external-link__icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    flex: 0 0 auto;
+    opacity: 0;
+    transform: translate(-0.125rem, 0.125rem);
+    transition:
+      opacity 150ms ease,
+      transform 150ms ease;
+  }
+
+  .external-link:hover .external-link__icon,
+  .external-link:focus-visible .external-link__icon {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
