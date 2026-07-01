@@ -39,7 +39,11 @@ if (missingSupabaseVariables.length > 0) {
   <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
 ) : organization ? (
   <ProfileShell organization={organization} totalOpenJobs={totalOpenJobs}>
-    <ProfileCareersList openJobs={openJobs} totalOpenJobs={totalOpenJobs} />
+    <ProfileCareersList
+      openJobs={openJobs}
+      totalOpenJobs={totalOpenJobs}
+      showPostedDates={false}
+    />
   </ProfileShell>
 ) : (
   <main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
