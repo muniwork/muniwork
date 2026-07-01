@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "assets:import": "tsx scripts/import-organization-asset.ts",
     "enrich:map-covers": "node scripts/enrich-map-covers.js"
   },
   "engines": {
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
+    "tsx": "4.22.4",
     "typescript": "6.0.3"
   },
   "overrides": {

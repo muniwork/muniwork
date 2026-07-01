@@ -2,15 +2,28 @@
 import { Landmark } from '@lucide/astro';
 
 const { organization } = Astro.props;
+const sealAsset = organization.sealAsset;
 ---
 
 <header class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
   <div class="flex items-center gap-4 sm:gap-5">
     <div
       class="grid size-16 shrink-0 place-items-center rounded-lg border bg-background text-xl font-semibold shadow-sm sm:size-20 sm:text-2xl"
-      aria-hidden="true"
+      aria-hidden={sealAsset ? undefined : 'true'}
     >
-      <Landmark class="size-8 sm:size-9" />
+      {
+        sealAsset ? (
+          <img
+            src={sealAsset.publicUrl}
+            alt={`${organization.officialName} seal`}
+            class="size-12 object-contain sm:size-16"
+            loading="eager"
+            decoding="async"
+          />
+        ) : (
+          <Landmark class="size-8 sm:size-9" />
+        )
+      }
     </div>
     <div class="min-w-0">
       <h1 class="text-3xl font-semibold leading-tight sm:text-5xl">

@@ -12,6 +12,16 @@ export type OrganizationProfile = {
   coverLng: number | null;
   coverZoom: number | null;
   coverLocationLabel: string | null;
+  sealAsset: {
+    assetType: string;
+    mimeType: string | null;
+    publicUrl: string;
+    sourceUrl: string | null;
+    sourceAssetUrl: string | null;
+    storagePath: string;
+    usageNotes: string | null;
+    verificationStatus: string;
+  } | null;
 };
 
 export type OrganizationProfilePageData = {
