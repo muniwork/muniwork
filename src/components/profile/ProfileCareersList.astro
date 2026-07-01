@@ -64,9 +64,11 @@ function formatOpenJobsSummary() {
                       job.title
                     )}
                   </h3>
-                  <p class="mt-1 text-sm text-muted-foreground">
-                    {[job.department, job.location].filter(Boolean).join(' / ')}
-                  </p>
+                  {job.department && (
+                    <p class="mt-1 text-sm text-muted-foreground">
+                      {job.department}
+                    </p>
+                  )}
                 </div>
                 <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
                   {formatDate(job.postedAt) && (
