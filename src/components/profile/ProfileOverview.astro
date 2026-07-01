@@ -4,6 +4,7 @@ import { formatCountyName, formatStateName, formatWebsiteHost } from '../../lib/
 
 const { organization } = Astro.props;
 const stateName = formatStateName(organization.stateCode);
+const isCounty = organization.organizationType?.trim().toLowerCase() === 'county';
 
 const governanceIntroBySlug: Record<string, string> = {
   'boca-raton-fl':
@@ -28,12 +29,14 @@ function formatOrganizationType(value: string | null | undefined): string {
 
 const overviewDetails = [
   ['Type', formatOrganizationType(organization.organizationType)],
-  organization.countyName ? ['County', formatCountyName(organization.countyName)] : null,
+  !isCounty && organization.countyName ? ['County', formatCountyName(organization.countyName)] : null,
   ['State', stateName],
   organization.officialWebsite
     ? ['Website', formatWebsiteHost(organization.officialWebsite), organization.officialWebsite]
     : null,
 ].filter(Boolean);
+const overviewDetailsGridClass =
+  overviewDetails.length >= 4 ? 'sm:grid-cols-4' : 'sm:grid-cols-3';
 ---
 
 <section
@@ -51,7 +54,7 @@ const overviewDetails = [
         {overviewIntro}
       </p>
 
-      <dl class="mt-8 grid justify-items-center gap-6 border-t pt-6 sm:grid-cols-4">
+      <dl class={`mt-8 grid justify-items-center gap-6 border-t pt-6 ${overviewDetailsGridClass}`}>
         {
           overviewDetails.map((detail) => {
             const [label, value, href] = detail as [string, string, string?];
