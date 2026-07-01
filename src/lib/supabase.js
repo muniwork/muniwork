@@ -24,7 +24,7 @@ function getRequiredEnv(name) {
   return value;
 }
 
-export function getMissingSupabaseEnvVariables() {
+function getMissingSupabaseEnvVariables() {
   return requiredEnvVariables.filter((name) => !getEnv(name));
 }
 

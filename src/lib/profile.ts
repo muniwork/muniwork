@@ -1,7 +1,7 @@
 import { getOpenJobsByOrganizationId, type OpenJob } from './jobs';
 import { getOrganizationBySlug } from './organizations.js';
 
-export type OrganizationProfile = {
+type OrganizationProfile = {
   id: string;
   officialName: string;
   organizationType: string | null;
