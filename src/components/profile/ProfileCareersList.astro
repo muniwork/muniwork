@@ -34,7 +34,7 @@ function formatDate(value: string | null | undefined): string | null {
         <div class="grid">
           <div class="grid divide-y">
             {openJobs.map((job) => (
-              <article class="grid gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_auto]">
+              <article class="grid gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                 <div class="min-w-0">
                   <h3 class="text-base font-semibold leading-6">
                     {job.applyUrl ? (
