@@ -5,6 +5,7 @@ import type { OpenJob } from '../../lib/jobs';
 const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
 const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
 const careersHref = Astro.props.careersHref as string | undefined;
+const showPostedDates = Astro.props.showPostedDates ?? true;
 const visibleJobCount = openJobs.length;
 const hasOpenJobs = visibleJobCount > 0;
 
@@ -73,18 +74,22 @@ function formatOpenJobsSummary() {
                   )}
                 </div>
                 <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
-                  {formatDate(job.postedAt) && (
+                  {showPostedDates && formatDate(job.postedAt) && (
                     <p>
                       <span class="font-medium text-foreground">Posted</span>{' '}
                       {formatDate(job.postedAt)}
                     </p>
                   )}
-                  {formatDate(job.closesAt) && (
+                  {formatDate(job.closesAt) ? (
                     <p>
                       <span class="font-medium text-foreground">Closes</span>{' '}
                       {formatDate(job.closesAt)}
                     </p>
-                  )}
+                  ) : !showPostedDates ? (
+                    <p>
+                      <span class="font-medium text-foreground">Open until filled</span>
+                    </p>
+                  ) : null}
                 </div>
               </article>
             ))}

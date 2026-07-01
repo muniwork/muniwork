@@ -17,6 +17,7 @@ const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
       openJobs={openJobs}
       totalOpenJobs={totalOpenJobs}
       careersHref={`/${organization.slug}/careers`}
+      showPostedDates={false}
     />
     <ProfilePipelineSections />
   </div>
