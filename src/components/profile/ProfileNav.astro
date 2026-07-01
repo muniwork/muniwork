@@ -15,11 +15,10 @@ const formattedOpenJobs = Number(totalOpenJobs).toLocaleString();
 const formattedOpenBids = Number(totalOpenBids).toLocaleString();
 ---
 
-<div class="tabs overflow-x-auto py-3">
+<div class="-mb-px overflow-x-auto pb-px pt-3">
   <nav
-    class="[&_a]:px-4 sm:[&_a]:px-5"
+    class="inline-flex w-fit items-center justify-center gap-1 text-sm font-medium"
     aria-label="Organization profile sections"
-    data-variant="line"
   >
     {sections.map(([section, href]) => {
       const isCurrent = currentPath === href;
@@ -27,6 +26,7 @@ const formattedOpenBids = Number(totalOpenBids).toLocaleString();
       return (
         <a
           aria-current={isCurrent ? 'page' : undefined}
+          class={`-mb-px inline-flex items-center justify-center whitespace-nowrap border-b px-4 pb-3 pt-1 transition-colors sm:px-5 ${isCurrent ? 'border-foreground text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
           href={href}
         >
           <span class="inline-flex items-center gap-1.5">
