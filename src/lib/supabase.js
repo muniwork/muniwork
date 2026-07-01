@@ -10,8 +10,12 @@ export class MissingSupabaseEnvError extends Error {
 
 const requiredEnvVariables = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 
+function getEnv(name) {
+  return process.env[name] || import.meta.env?.[name] || null;
+}
+
 function getRequiredEnv(name) {
-  const value = process.env[name];
+  const value = getEnv(name);
 
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`);
@@ -21,7 +25,7 @@ function getRequiredEnv(name) {
 }
 
 export function getMissingSupabaseEnvVariables() {
-  return requiredEnvVariables.filter((name) => !process.env[name]);
+  return requiredEnvVariables.filter((name) => !getEnv(name));
 }
 
 export function getSupabaseServerClient() {

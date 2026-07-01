@@ -44,7 +44,8 @@ map.
 
 The default static map style is `mapbox/light-v11`. To remove city labels, create
 and publish a custom Mapbox Studio style with the unwanted label layers hidden,
-then set `MAPBOX_STATIC_STYLE` to that style path.
+then set `MAPBOX_STATIC_STYLE` to that style path. Either `mapbox/light-v11` or a
+full Studio URL such as `mapbox://styles/mapbox/light-v11` is accepted.
 
 Coordinates are populated outside page rendering:
 
