@@ -1,10 +1,3 @@
 [build]
 command = "npm run build"
 publish = "dist"
-
-[[plugins]]
-package = "@netlify/plugin-lighthouse"
-
-  [[plugins.inputs.audits]]
-  path = "boca-raton-fl"
-  output_path = "reports/lighthouse-boca-raton-fl.html"
