@@ -4,9 +4,18 @@ Public site and front end for Muniwork.
 
 ## Current Scope
 
-- Astro + Netlify + Tailwind CSS + Basecoat Rhea
-- Organization overview pages plus Careers subpages
-- Shared template for municipalities and counties
+- Astro + Netlify + Tailwind CSS + Basecoat Rhea.
+- Minimal homepage with a featured organization profile.
+- Shared organization profile template for municipalities and counties.
+- Profile overview with leadership, careers, procurement, public meetings, and
+  pipeline sections.
+- Dedicated organization subpages for careers, procurement, and meetings.
+- Crawl and preview basics: canonical URLs, Open Graph/Twitter metadata,
+  `robots.txt`, `sitemap.xml`, and `llms.txt`.
+
+The app is route-driven around organization slugs. Profile URLs follow
+`/{organization-slug}`, with workflow subpages at `/{organization-slug}/careers`,
+`/{organization-slug}/procurement`, and `/{organization-slug}/meetings`.
 
 ## Runtime
 
