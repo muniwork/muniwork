@@ -1,5 +1,6 @@
 ---
 import ProfileCareersList from './ProfileCareersList.astro';
+import ProfileLeadershipList from './ProfileLeadershipList.astro';
 import ProfileProcurementList from './ProfileProcurementList.astro';
 import ProfileMeetingsList from './ProfileMeetingsList.astro';
 import ProfilePipelineSections from './ProfilePipelineSections.astro';
@@ -15,6 +16,7 @@ const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
 const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
 const openBids = (Astro.props.openBids ?? []) as OpenBid[];
 const totalOpenBids = Astro.props.totalOpenBids ?? openBids.length;
+const leadership = Astro.props.leadership ?? [];
 const upcomingMeetings = (Astro.props.upcomingMeetings ?? []) as UpcomingMeeting[];
 const totalUpcomingMeetings = Astro.props.totalUpcomingMeetings ?? upcomingMeetings.length;
 const hasSectionsAfterMeetings = Object.keys(profileWorkflowSections).some(
@@ -29,6 +31,7 @@ const hasSectionsAfterMeetings = Object.keys(profileWorkflowSections).some(
 >
   <div class="grid gap-10">
     <ProfileOverview organization={organization} />
+    <ProfileLeadershipList leadership={leadership} />
     <ProfileCareersList
       openJobs={openJobs}
       totalOpenJobs={totalOpenJobs}

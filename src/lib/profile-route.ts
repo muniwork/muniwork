@@ -9,6 +9,7 @@ const emptyProfile: OrganizationProfilePageData = {
   totalOpenJobs: 0,
   openBids: [],
   totalOpenBids: 0,
+  leadership: [],
   upcomingMeetings: [],
   totalUpcomingMeetings: 0,
 };

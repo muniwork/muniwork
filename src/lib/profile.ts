@@ -1,5 +1,6 @@
 import { getOpenBidsByOrganizationId, type OpenBid } from './bids';
 import { getOpenJobsByOrganizationId, type OpenJob } from './jobs';
+import { getLeadershipByOrganizationId, type LeadershipRole } from './leadership';
 import { getUpcomingMeetingsByOrganizationId, type UpcomingMeeting } from './meetings';
 import { getOrganizationBySlug } from './organizations.js';
 
@@ -33,6 +34,7 @@ export type OrganizationProfilePageData = {
   totalOpenJobs: number;
   openBids: OpenBid[];
   totalOpenBids: number;
+  leadership: LeadershipRole[];
   upcomingMeetings: UpcomingMeeting[];
   totalUpcomingMeetings: number;
 };
@@ -54,6 +56,7 @@ export async function getOrganizationProfileBySlug(
       totalOpenJobs: 0,
       openBids: [],
       totalOpenBids: 0,
+      leadership: [],
       upcomingMeetings: [],
       totalUpcomingMeetings: 0,
     };
@@ -66,18 +69,20 @@ export async function getOrganizationProfileBySlug(
       totalOpenJobs: 0,
       openBids: [],
       totalOpenBids: 0,
+      leadership: [],
       upcomingMeetings: [],
       totalUpcomingMeetings: 0,
     };
   }
 
-  const [jobsResult, bidsResult, meetingsResult] = await Promise.all([
+  const [jobsResult, bidsResult, leadership, meetingsResult] = await Promise.all([
     jobLimit > 0
       ? getOpenJobsByOrganizationId(organization.id, { limit: jobLimit })
       : Promise.resolve({ jobs: [], total: 0 }),
     bidLimit > 0
       ? getOpenBidsByOrganizationId(organization.id, { limit: bidLimit })
       : Promise.resolve({ bids: [], total: 0 }),
+    getLeadershipByOrganizationId(organization.id),
     meetingLimit > 0
       ? getUpcomingMeetingsByOrganizationId(organization.id, { limit: meetingLimit })
       : Promise.resolve({ meetings: [], total: 0 }),
@@ -89,6 +94,7 @@ export async function getOrganizationProfileBySlug(
     totalOpenJobs: jobsResult.total,
     openBids: bidsResult.bids,
     totalOpenBids: bidsResult.total,
+    leadership,
     upcomingMeetings: meetingsResult.meetings,
     totalUpcomingMeetings: meetingsResult.total,
   };
