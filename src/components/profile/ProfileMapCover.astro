@@ -1,8 +1,10 @@
 ---
 import { Image } from 'astro:assets';
 import {
+  getMapboxStaticCacheBuster,
   getMapboxStaticAccessToken,
   getMapboxStaticStyle,
+  shouldRequestFreshMapboxStaticImage,
 } from '../../lib/mapbox.js';
 
 const { organization } = Astro.props;
@@ -18,6 +20,8 @@ const zoom = Number.isFinite(Number(organization.coverZoom))
 const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng);
 const mapboxToken = getMapboxStaticAccessToken();
 const mapboxStyle = getMapboxStaticStyle();
+const mapboxCacheBuster = getMapboxStaticCacheBuster();
+const requestFreshMapboxImage = shouldRequestFreshMapboxStaticImage();
 
 let mapUrl = null;
 
@@ -27,6 +31,15 @@ if (hasCoordinates && mapboxToken) {
     attribution: 'false',
     logo: 'false',
   });
+
+  if (mapboxCacheBuster) {
+    params.set('cache_bust', mapboxCacheBuster);
+  }
+
+  if (requestFreshMapboxImage) {
+    params.set('fresh', 'true');
+  }
+
   const position = `${lng.toFixed(5)},${lat.toFixed(5)},${zoom},0`;
 
   mapUrl = `https://api.mapbox.com/styles/v1/${mapboxStyle}/static/${position}/${MAP_IMAGE_SIZE}?${params.toString()}`;
