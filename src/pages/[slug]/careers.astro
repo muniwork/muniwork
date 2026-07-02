@@ -7,6 +7,7 @@ import ProfileNotFound from '../../components/profile/ProfileNotFound.astro';
 import ProfileShell from '../../components/profile/ProfileShell.astro';
 import SupabaseSetupNotice from '../../components/system/SupabaseSetupNotice.astro';
 import { getProfileRouteStatus, loadProfileRouteData } from '../../lib/profile-route';
+import { getCanonicalUrl } from '../../lib/site';
 import '../../styles/global.css';
 
 const { slug } = Astro.params;
@@ -27,9 +28,17 @@ const pageTitle = organization
 const pageDescription = organization
   ? `Open public-sector jobs and career opportunities at ${organization.officialName}.`
   : 'Muniwork profiles local government organizations and public-sector career opportunities.';
+const canonicalUrl = organization
+  ? getCanonicalUrl(Astro.url, `/${organization.slug}/careers`)
+  : getCanonicalUrl(Astro.url);
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  image={organization?.sealAsset?.publicUrl}
+>
   {missingSupabaseVariables.length > 0 ? (
     <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
   ) : organization ? (

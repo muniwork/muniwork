@@ -8,6 +8,7 @@ import ProfileShell from '../../components/profile/ProfileShell.astro';
 import SupabaseSetupNotice from '../../components/system/SupabaseSetupNotice.astro';
 import { getProfileRouteStatus, loadProfileRouteData } from '../../lib/profile-route';
 import { profileWorkflowSections } from '../../lib/profile-sections.js';
+import { getCanonicalUrl } from '../../lib/site';
 import '../../styles/global.css';
 
 type WorkflowSection = {
@@ -41,9 +42,17 @@ const pageTitle = organization && section
 const pageDescription = organization && section
   ? `${section.body} ${organization.officialName}.`
   : 'Muniwork profiles local government organizations and public-sector career opportunities.';
+const canonicalUrl = organization && section && workflow
+  ? getCanonicalUrl(Astro.url, `/${organization.slug}/${workflow}`)
+  : getCanonicalUrl(Astro.url);
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  image={organization?.sealAsset?.publicUrl}
+>
   {missingSupabaseVariables.length > 0 ? (
     <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
   ) : section && organization ? (

@@ -7,6 +7,7 @@ import ProfileProcurementList from '../../components/profile/ProfileProcurementL
 import ProfileShell from '../../components/profile/ProfileShell.astro';
 import SupabaseSetupNotice from '../../components/system/SupabaseSetupNotice.astro';
 import { getProfileRouteStatus, loadProfileRouteData } from '../../lib/profile-route';
+import { getCanonicalUrl } from '../../lib/site';
 import '../../styles/global.css';
 
 const { slug } = Astro.params;
@@ -27,9 +28,17 @@ const pageTitle = organization
 const pageDescription = organization
   ? `Open bid opportunities and procurement notices for ${organization.officialName}.`
   : 'Muniwork profiles local government organizations and public-sector procurement opportunities.';
+const canonicalUrl = organization
+  ? getCanonicalUrl(Astro.url, `/${organization.slug}/procurement`)
+  : getCanonicalUrl(Astro.url);
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalUrl={canonicalUrl}
+  image={organization?.sealAsset?.publicUrl}
+>
   {missingSupabaseVariables.length > 0 ? (
     <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
   ) : organization ? (

@@ -1,8 +1,14 @@
 ---
+import { getCanonicalUrl, siteName } from '../lib/site';
+
 const {
   title = 'Muniwork',
   description = 'Muniwork profiles local government organizations and public-sector career opportunities.',
+  canonicalUrl = getCanonicalUrl(Astro.url),
+  image,
 } = Astro.props;
+
+const socialTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
 ---
 
 <!doctype html>
@@ -12,7 +18,18 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={description} />
+    {image && <meta name="twitter:image" content={image} />}
   </head>
   <body>
     <slot />

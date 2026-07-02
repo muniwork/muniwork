@@ -144,3 +144,24 @@ export async function getOrganizationBySlug(slug) {
     sealAsset: normalizeIdentityAsset(sealAsset, supabase),
   });
 }
+
+export async function getOrganizationsForSitemap() {
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('organizations')
+    .select('slug, updated_at')
+    .not('slug', 'is', null)
+    .order('slug', { ascending: true })
+    .limit(1000);
+
+  if (error) {
+    throw new Error(`Failed to load organization sitemap entries: ${error.message}`);
+  }
+
+  return (data ?? [])
+    .map((organization) => ({
+      slug: organization.slug?.trim(),
+      updatedAt: organization.updated_at,
+    }))
+    .filter((organization) => organization.slug);
+}
