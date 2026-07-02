@@ -6,6 +6,7 @@ import { formatListingTitle } from '../../lib/formatters';
 const openBids = (Astro.props.openBids ?? []) as OpenBid[];
 const totalOpenBids = Astro.props.totalOpenBids ?? openBids.length;
 const procurementHref = Astro.props.procurementHref as string | undefined;
+const showSectionDivider = Astro.props.showSectionDivider ?? true;
 const visibleBidCount = openBids.length;
 const hasOpenBids = visibleBidCount > 0;
 const displayBids = openBids.map((bid) => ({
@@ -28,7 +29,7 @@ function formatDate(value: string | null | undefined): string | null {
 ---
 
 <section id="procurement" class="scroll-mt-24">
-  <article class="border-b pb-8">
+  <article class={showSectionDivider ? 'border-b pb-8' : ''}>
     <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
       <h2 class="text-xl font-semibold">Procurement</h2>
     </header>
