@@ -2,18 +2,22 @@
 import ProfilePlaceholderSection from './ProfilePlaceholderSection.astro';
 import { profileWorkflowSections } from '../../lib/profile-sections.js';
 
-const pipelineSections = Object.entries(profileWorkflowSections).filter(([id]) => id !== 'procurement');
+const pipelineSections = Object.entries(profileWorkflowSections).filter(
+  ([id]) => !['meetings', 'procurement'].includes(id)
+);
 ---
 
-<section class="grid gap-4 lg:grid-cols-2">
-  {pipelineSections.map(([id, section]) => (
-    <div id={id} class="scroll-mt-24">
-      <ProfilePlaceholderSection
-        title={section.title}
-        label={section.label}
-        body={section.body}
-        metrics={section.metrics}
-      />
-    </div>
-  ))}
-</section>
+{pipelineSections.length > 0 && (
+  <section class="grid gap-4 lg:grid-cols-2">
+    {pipelineSections.map(([id, section]) => (
+      <div id={id} class="scroll-mt-24">
+        <ProfilePlaceholderSection
+          title={section.title}
+          label={section.label}
+          body={section.body}
+          metrics={section.metrics}
+        />
+      </div>
+    ))}
+  </section>
+)}

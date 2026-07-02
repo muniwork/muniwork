@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "assets:import": "tsx scripts/import-organization-asset.ts",
-    "enrich:map-covers": "node scripts/enrich-map-covers.js"
+    "enrich:map-covers": "node scripts/enrich-map-covers.js",
+    "ingest:meetings": "tsx scripts/ingest-meetings.ts"
   },
   "engines": {
     "node": "^20.19.0 || ^22.13.0 || >=24"

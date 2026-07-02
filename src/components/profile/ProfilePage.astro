@@ -1,17 +1,21 @@
 ---
 import ProfileCareersList from './ProfileCareersList.astro';
 import ProfileProcurementList from './ProfileProcurementList.astro';
+import ProfileMeetingsList from './ProfileMeetingsList.astro';
 import ProfilePipelineSections from './ProfilePipelineSections.astro';
 import ProfileOverview from './ProfileOverview.astro';
 import ProfileShell from './ProfileShell.astro';
 import type { OpenBid } from '../../lib/bids';
 import type { OpenJob } from '../../lib/jobs';
+import type { UpcomingMeeting } from '../../lib/meetings';
 
 const { organization } = Astro.props;
 const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
 const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
 const openBids = (Astro.props.openBids ?? []) as OpenBid[];
 const totalOpenBids = Astro.props.totalOpenBids ?? openBids.length;
+const upcomingMeetings = (Astro.props.upcomingMeetings ?? []) as UpcomingMeeting[];
+const totalUpcomingMeetings = Astro.props.totalUpcomingMeetings ?? upcomingMeetings.length;
 ---
 
 <ProfileShell
@@ -31,6 +35,10 @@ const totalOpenBids = Astro.props.totalOpenBids ?? openBids.length;
       openBids={openBids}
       totalOpenBids={totalOpenBids}
       procurementHref={`/${organization.slug}/procurement`}
+    />
+    <ProfileMeetingsList
+      upcomingMeetings={upcomingMeetings}
+      totalUpcomingMeetings={totalUpcomingMeetings}
     />
     <ProfilePipelineSections />
   </div>

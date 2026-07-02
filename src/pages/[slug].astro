@@ -6,6 +6,7 @@ import ProfilePage from '../components/profile/ProfilePage.astro';
 import SupabaseSetupNotice from '../components/system/SupabaseSetupNotice.astro';
 import type { OpenBid } from '../lib/bids';
 import type { OpenJob } from '../lib/jobs';
+import type { UpcomingMeeting } from '../lib/meetings';
 import { getOrganizationProfileBySlug } from '../lib/profile';
 import { MissingSupabaseEnvError } from '../lib/supabase.js';
 import '../styles/global.css';
@@ -16,6 +17,8 @@ let openJobs: OpenJob[] = [];
 let totalOpenJobs = 0;
 let openBids: OpenBid[] = [];
 let totalOpenBids = 0;
+let upcomingMeetings: UpcomingMeeting[] = [];
+let totalUpcomingMeetings = 0;
 let missingSupabaseVariables = [];
 
 try {
@@ -25,6 +28,8 @@ try {
   totalOpenJobs = profile.totalOpenJobs;
   openBids = profile.openBids;
   totalOpenBids = profile.totalOpenBids;
+  upcomingMeetings = profile.upcomingMeetings;
+  totalUpcomingMeetings = profile.totalUpcomingMeetings;
 } catch (error) {
   if (!(error instanceof MissingSupabaseEnvError)) {
     throw error;
@@ -59,6 +64,8 @@ const pageDescription = organization
       totalOpenJobs={totalOpenJobs}
       openBids={openBids}
       totalOpenBids={totalOpenBids}
+      upcomingMeetings={upcomingMeetings}
+      totalUpcomingMeetings={totalUpcomingMeetings}
     />
   ) : (
     <main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">

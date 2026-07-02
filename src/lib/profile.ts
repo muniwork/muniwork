@@ -1,5 +1,6 @@
 import { getOpenBidsByOrganizationId, type OpenBid } from './bids';
 import { getOpenJobsByOrganizationId, type OpenJob } from './jobs';
+import { getUpcomingMeetingsByOrganizationId, type UpcomingMeeting } from './meetings';
 import { getOrganizationBySlug } from './organizations.js';
 
 type OrganizationProfile = {
@@ -32,11 +33,17 @@ export type OrganizationProfilePageData = {
   totalOpenJobs: number;
   openBids: OpenBid[];
   totalOpenBids: number;
+  upcomingMeetings: UpcomingMeeting[];
+  totalUpcomingMeetings: number;
 };
 
 export async function getOrganizationProfileBySlug(
   slug: string | undefined,
-  { bidLimit = 25, jobLimit = 25 }: { bidLimit?: number; jobLimit?: number } = {}
+  {
+    bidLimit = 25,
+    jobLimit = 25,
+    meetingLimit = 5,
+  }: { bidLimit?: number; jobLimit?: number; meetingLimit?: number } = {}
 ): Promise<OrganizationProfilePageData> {
   const organization = (await getOrganizationBySlug(slug)) as OrganizationProfile | null;
 
@@ -47,26 +54,33 @@ export async function getOrganizationProfileBySlug(
       totalOpenJobs: 0,
       openBids: [],
       totalOpenBids: 0,
+      upcomingMeetings: [],
+      totalUpcomingMeetings: 0,
     };
   }
 
-  if (jobLimit <= 0 && bidLimit <= 0) {
+  if (jobLimit <= 0 && bidLimit <= 0 && meetingLimit <= 0) {
     return {
       organization,
       openJobs: [],
       totalOpenJobs: 0,
       openBids: [],
       totalOpenBids: 0,
+      upcomingMeetings: [],
+      totalUpcomingMeetings: 0,
     };
   }
 
-  const [jobsResult, bidsResult] = await Promise.all([
+  const [jobsResult, bidsResult, meetingsResult] = await Promise.all([
     jobLimit > 0
       ? getOpenJobsByOrganizationId(organization.id, { limit: jobLimit })
       : Promise.resolve({ jobs: [], total: 0 }),
     bidLimit > 0
       ? getOpenBidsByOrganizationId(organization.id, { limit: bidLimit })
       : Promise.resolve({ bids: [], total: 0 }),
+    meetingLimit > 0
+      ? getUpcomingMeetingsByOrganizationId(organization.id, { limit: meetingLimit })
+      : Promise.resolve({ meetings: [], total: 0 }),
   ]);
 
   return {
@@ -75,5 +89,7 @@ export async function getOrganizationProfileBySlug(
     totalOpenJobs: jobsResult.total,
     openBids: bidsResult.bids,
     totalOpenBids: bidsResult.total,
+    upcomingMeetings: meetingsResult.meetings,
+    totalUpcomingMeetings: meetingsResult.total,
   };
 }

@@ -1,0 +1,112 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import type { UpcomingMeeting } from '../../lib/meetings';
+import { formatListingTitle } from '../../lib/formatters';
+
+const upcomingMeetings = (Astro.props.upcomingMeetings ?? []) as UpcomingMeeting[];
+const totalUpcomingMeetings = Astro.props.totalUpcomingMeetings ?? upcomingMeetings.length;
+const meetingsHref = Astro.props.meetingsHref as string | undefined;
+const visibleMeetingCount = upcomingMeetings.length;
+const hasUpcomingMeetings = visibleMeetingCount > 0;
+const displayMeetings = upcomingMeetings.map((meeting) => ({
+  ...meeting,
+  displayTitle: formatListingTitle(meeting.title),
+}));
+
+function formatMeetingDate(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'America/New_York',
+  }).format(new Date(value));
+}
+
+function formatMeetingTime(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'America/New_York',
+  }).format(new Date(value));
+}
+---
+
+<section id="meetings" class="scroll-mt-24">
+  <article class="border-b pb-8">
+    <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+      <h2 class="text-xl font-semibold">Upcoming meetings</h2>
+    </header>
+
+    <section class="mt-4">
+      {hasUpcomingMeetings ? (
+        <div class="grid">
+          <div class="grid border-t">
+            {displayMeetings.map((meeting) => (
+              <article class="grid gap-3 border-b py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                <div class="min-w-0">
+                  <h3 class="text-base font-semibold leading-6">
+                    {meeting.publicUrl ? (
+                      <a
+                        class="external-link underline-offset-4 hover:underline"
+                        href={meeting.publicUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <span>{meeting.displayTitle}</span>
+                        <ArrowUpRight aria-hidden="true" class="external-link__icon" />
+                      </a>
+                    ) : (
+                      meeting.displayTitle
+                    )}
+                  </h3>
+                  {meeting.location && (
+                    <p class="mt-1 text-sm text-muted-foreground">
+                      {meeting.location}
+                    </p>
+                  )}
+                </div>
+                <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
+                  {formatMeetingDate(meeting.startsAt) && (
+                    <p>
+                      <span class="font-medium text-foreground">
+                        {formatMeetingDate(meeting.startsAt)}
+                      </span>
+                    </p>
+                  )}
+                  {formatMeetingTime(meeting.startsAt) && (
+                    <p>{formatMeetingTime(meeting.startsAt)}</p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+          {meetingsHref && totalUpcomingMeetings > visibleMeetingCount && (
+            <div class="flex justify-start pt-5">
+              <a class="btn" data-variant="outline" href={meetingsHref}>
+                View all meetings
+              </a>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div class="alert">
+          <div>
+            <strong>No upcoming meetings found</strong>
+            <p>
+              Muniwork does not currently have upcoming public meetings for this
+              organization.
+            </p>
+          </div>
+        </div>
+      )}
+    </section>
+  </article>
+</section>
