@@ -5,7 +5,7 @@ import type { LeadershipRole } from '../../lib/leadership';
 const leadership = (Astro.props.leadership ?? []) as LeadershipRole[];
 const hasLeadership = leadership.length > 0;
 const governingBodyRoles = leadership.filter((role) =>
-  /mayor|council/i.test(role.title)
+  /mayor|commissioner|council/i.test(role.title)
 );
 const administrationRoles = leadership.filter(
   (role) => !governingBodyRoles.includes(role)
@@ -24,7 +24,7 @@ const hasSingleAdministrationRole = administrationRoles.length === 1;
         <div class="grid gap-6">
           {governingBodyRoles.length > 0 && (
             <div>
-              <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
+              <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7">
                 {governingBodyRoles.map((role) => {
                   const href = role.url || role.sourceUrl;
 
