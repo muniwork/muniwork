@@ -1,7 +1,8 @@
 ---
-import { ArrowUpRight } from '@lucide/astro';
+import ProfileListingSection from './ProfileListingSection.astro';
+import ProfileListingTitle from './ProfileListingTitle.astro';
 import type { OpenBid } from '../../lib/bids';
-import { formatListingTitle } from '../../lib/formatters';
+import { formatListingTitle, formatShortDate } from '../../lib/formatters';
 
 const openBids = (Astro.props.openBids ?? []) as OpenBid[];
 const totalOpenBids = Astro.props.totalOpenBids ?? openBids.length;
@@ -12,90 +13,47 @@ const hasOpenBids = visibleBidCount > 0;
 const displayBids = openBids.map((bid) => ({
   ...bid,
   displayTitle: formatListingTitle(bid.title),
+  closeDate: formatShortDate(bid.closeAt),
 }));
-
-function formatDate(value: string | null | undefined): string | null {
-  if (!value) {
-    return null;
-  }
-
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date(value));
-}
 
 ---
 
-<section id="procurement" class="scroll-mt-24">
-  <article class={showSectionDivider ? 'border-b pb-8' : ''}>
-    <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-      <h2 class="text-xl font-semibold">Procurement</h2>
-    </header>
-
-    <section class="mt-4">
-      {hasOpenBids ? (
-        <div class="grid">
-          <div class="grid border-t">
-            {displayBids.map((bid) => (
-              <article class="grid gap-3 border-b py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                <div class="min-w-0">
-                  <h3 class="text-base font-semibold leading-6">
-                    {bid.publicUrl ? (
-                      <a
-                        class="external-link underline-offset-4 hover:underline"
-                        href={bid.publicUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <span>{bid.displayTitle}</span>
-                        <ArrowUpRight aria-hidden="true" class="external-link__icon" />
-                      </a>
-                    ) : (
-                      bid.displayTitle
-                    )}
-                  </h3>
-                  {(bid.bidNumber || bid.bidType) && (
-                    <p class="mt-1 text-sm text-muted-foreground">
-                      {[bid.bidType, bid.bidNumber].filter(Boolean).join(' · ')}
-                    </p>
-                  )}
-                </div>
-                <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
-                  {formatDate(bid.closeAt) ? (
-                    <p>
-                      <span class="font-medium text-foreground">Closes</span>{' '}
-                      {formatDate(bid.closeAt)}
-                    </p>
-                  ) : (
-                    <p>
-                      <span class="font-medium text-foreground">Close date not listed</span>
-                    </p>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-          {procurementHref && totalOpenBids > visibleBidCount && (
-            <div class="flex justify-start pt-5">
-              <a class="btn" data-variant="outline" href={procurementHref}>
-                View all procurements
-              </a>
-            </div>
+<ProfileListingSection
+  id="procurement"
+  title="Procurement"
+  hasItems={hasOpenBids}
+  showSectionDivider={showSectionDivider}
+  viewAllHref={procurementHref}
+  viewAllLabel="View all procurements"
+  showViewAll={totalOpenBids > visibleBidCount}
+  emptyTitle="No open bids found"
+  emptyBody="Muniwork does not currently have open bid opportunities for this organization."
+>
+  <Fragment slot="items">
+    {displayBids.map((bid) => (
+      <article class="grid gap-3 border-b py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+        <div class="min-w-0">
+          <h3 class="text-base font-semibold leading-6">
+            <ProfileListingTitle title={bid.displayTitle} href={bid.publicUrl} />
+          </h3>
+          {(bid.bidNumber || bid.bidType) && (
+            <p class="mt-1 text-sm text-muted-foreground">
+              {[bid.bidType, bid.bidNumber].filter(Boolean).join(' · ')}
+            </p>
           )}
         </div>
-      ) : (
-        <div class="alert">
-          <div>
-            <strong>No open bids found</strong>
+        <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
+          {bid.closeDate ? (
             <p>
-              Muniwork does not currently have open bid opportunities for this
-              organization.
+              <span class="font-medium text-foreground">Closes</span> {bid.closeDate}
             </p>
-          </div>
+          ) : (
+            <p>
+              <span class="font-medium text-foreground">Close date not listed</span>
+            </p>
+          )}
         </div>
-      )}
-    </section>
-  </article>
-</section>
+      </article>
+    ))}
+  </Fragment>
+</ProfileListingSection>

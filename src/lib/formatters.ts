@@ -99,6 +99,21 @@ const LOCATION_ACRONYMS = new Set([
   'SE',
 ]);
 
+const SHORT_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+const EASTERN_DATE_TIME_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  timeZone: 'America/New_York',
+});
+
 export function formatStateName(stateCode: string | null | undefined): string {
   if (!stateCode) {
     return 'Unknown';
@@ -173,6 +188,22 @@ export function formatLocation(value: string | null | undefined): string {
     .replace(/\b([A-Z]{2,})\b/g, (word) =>
       LOCATION_ACRONYMS.has(word) ? word : `${word.charAt(0)}${word.slice(1).toLowerCase()}`
     );
+}
+
+export function formatShortDate(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return SHORT_DATE_FORMATTER.format(new Date(value));
+}
+
+export function formatEasternDateTime(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return EASTERN_DATE_TIME_FORMATTER.format(new Date(value));
 }
 
 function formatTitleWord(word: string, index: number, wordCount: number): string {

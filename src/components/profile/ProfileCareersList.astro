@@ -1,7 +1,8 @@
 ---
-import { ArrowUpRight } from '@lucide/astro';
+import ProfileListingSection from './ProfileListingSection.astro';
+import ProfileListingTitle from './ProfileListingTitle.astro';
 import type { OpenJob } from '../../lib/jobs';
-import { formatListingTitle } from '../../lib/formatters';
+import { formatListingTitle, formatShortDate } from '../../lib/formatters';
 
 const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
 const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
@@ -13,96 +14,53 @@ const hasOpenJobs = visibleJobCount > 0;
 const displayJobs = openJobs.map((job) => ({
   ...job,
   displayTitle: formatListingTitle(job.title),
+  postedDate: formatShortDate(job.postedAt),
+  closesDate: formatShortDate(job.closesAt),
 }));
-
-function formatDate(value: string | null | undefined): string | null {
-  if (!value) {
-    return null;
-  }
-
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date(value));
-}
 
 ---
 
-<section id="careers" class="scroll-mt-24">
-  <article class={showSectionDivider ? 'border-b pb-8' : ''}>
-    <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-      <h2 class="text-xl font-semibold">Careers</h2>
-    </header>
-
-    <section class="mt-4">
-      {hasOpenJobs ? (
-        <div class="grid">
-          <div class="grid border-t">
-            {displayJobs.map((job) => (
-              <article class="grid gap-3 border-b py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                <div class="min-w-0">
-                  <h3 class="text-base font-semibold leading-6">
-                    {job.applyUrl ? (
-                      <a
-                        class="external-link underline-offset-4 hover:underline"
-                        href={job.applyUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <span>{job.displayTitle}</span>
-                        <ArrowUpRight aria-hidden="true" class="external-link__icon" />
-                      </a>
-                    ) : (
-                      job.displayTitle
-                    )}
-                  </h3>
-                  {job.department && (
-                    <p class="mt-1 text-sm text-muted-foreground">
-                      {job.department}
-                    </p>
-                  )}
-                </div>
-                <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
-                  {showPostedDates && formatDate(job.postedAt) && (
-                    <p>
-                      <span class="font-medium text-foreground">Posted</span>{' '}
-                      {formatDate(job.postedAt)}
-                    </p>
-                  )}
-                  {formatDate(job.closesAt) ? (
-                    <p>
-                      <span class="font-medium text-foreground">Closes</span>{' '}
-                      {formatDate(job.closesAt)}
-                    </p>
-                  ) : !showPostedDates ? (
-                    <p>
-                      <span class="font-medium text-foreground">Open until filled</span>
-                    </p>
-                  ) : null}
-                </div>
-              </article>
-            ))}
-          </div>
-          {careersHref && totalOpenJobs > visibleJobCount && (
-            <div class="flex justify-start pt-5">
-              <a class="btn" data-variant="outline" href={careersHref}>
-                View all careers
-              </a>
-            </div>
+<ProfileListingSection
+  id="careers"
+  title="Careers"
+  hasItems={hasOpenJobs}
+  showSectionDivider={showSectionDivider}
+  viewAllHref={careersHref}
+  viewAllLabel="View all careers"
+  showViewAll={totalOpenJobs > visibleJobCount}
+  emptyTitle="No open careers found"
+  emptyBody="Muniwork does not currently have open public career postings for this organization."
+>
+  <Fragment slot="items">
+    {displayJobs.map((job) => (
+      <article class="grid gap-3 border-b py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+        <div class="min-w-0">
+          <h3 class="text-base font-semibold leading-6">
+            <ProfileListingTitle title={job.displayTitle} href={job.applyUrl} />
+          </h3>
+          {job.department && (
+            <p class="mt-1 text-sm text-muted-foreground">
+              {job.department}
+            </p>
           )}
         </div>
-      ) : (
-        <div class="alert">
-          <div>
-            <strong>No open careers found</strong>
+        <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
+          {showPostedDates && job.postedDate && (
             <p>
-              Muniwork does not currently have open public career postings for
-              this organization.
+              <span class="font-medium text-foreground">Posted</span> {job.postedDate}
             </p>
-          </div>
+          )}
+          {job.closesDate ? (
+            <p>
+              <span class="font-medium text-foreground">Closes</span> {job.closesDate}
+            </p>
+          ) : !showPostedDates ? (
+            <p>
+              <span class="font-medium text-foreground">Open until filled</span>
+            </p>
+          ) : null}
         </div>
-      )}
-    </section>
-  </article>
-</section>
+      </article>
+    ))}
+  </Fragment>
+</ProfileListingSection>

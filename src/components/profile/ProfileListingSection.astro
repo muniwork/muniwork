@@ -1,0 +1,45 @@
+---
+const {
+  id,
+  title,
+  hasItems,
+  showSectionDivider = true,
+  viewAllHref,
+  viewAllLabel,
+  showViewAll = false,
+  emptyTitle,
+  emptyBody,
+} = Astro.props;
+---
+
+<section id={id} class="scroll-mt-24">
+  <article class={showSectionDivider ? 'border-b pb-8' : ''}>
+    <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+      <h2 class="text-xl font-semibold">{title}</h2>
+    </header>
+
+    <section class="mt-4">
+      {hasItems ? (
+        <div class="grid">
+          <div class="grid border-t">
+            <slot name="items" />
+          </div>
+          {showViewAll && viewAllHref && viewAllLabel && (
+            <div class="flex justify-start pt-5">
+              <a class="btn" data-variant="outline" href={viewAllHref}>
+                {viewAllLabel}
+              </a>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div class="alert">
+          <div>
+            <strong>{emptyTitle}</strong>
+            <p>{emptyBody}</p>
+          </div>
+        </div>
+      )}
+    </section>
+  </article>
+</section>

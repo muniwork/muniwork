@@ -1,7 +1,8 @@
 ---
-import { ArrowUpRight } from '@lucide/astro';
+import ProfileListingSection from './ProfileListingSection.astro';
+import ProfileListingTitle from './ProfileListingTitle.astro';
 import type { UpcomingMeeting } from '../../lib/meetings';
-import { formatListingTitle, formatLocation } from '../../lib/formatters';
+import { formatEasternDateTime, formatListingTitle, formatLocation } from '../../lib/formatters';
 
 const upcomingMeetings = (Astro.props.upcomingMeetings ?? []) as UpcomingMeeting[];
 const totalUpcomingMeetings = Astro.props.totalUpcomingMeetings ?? upcomingMeetings.length;
@@ -13,85 +14,38 @@ const displayMeetings = upcomingMeetings.map((meeting) => ({
   ...meeting,
   displayTitle: formatListingTitle(meeting.title),
   displayLocation: formatLocation(meeting.location),
+  startsAtText: formatEasternDateTime(meeting.startsAt),
 }));
-
-function formatMeetingDateTime(value: string | null | undefined): string | null {
-  if (!value) {
-    return null;
-  }
-
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZone: 'America/New_York',
-  }).format(new Date(value));
-}
 ---
 
-<section id="meetings" class="scroll-mt-24">
-  <article class={showSectionDivider ? 'border-b pb-8' : ''}>
-    <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-      <h2 class="text-xl font-semibold">Upcoming meetings</h2>
-    </header>
-
-    <section class="mt-4">
-      {hasUpcomingMeetings ? (
-        <div class="grid">
-          <div class="grid border-t">
-            {displayMeetings.map((meeting) => (
-              <article class="grid gap-3 border-b py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                <div class="min-w-0">
-                  <h3 class="text-base font-semibold leading-6">
-                    {meeting.publicUrl ? (
-                      <a
-                        class="external-link underline-offset-4 hover:underline"
-                        href={meeting.publicUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <span>{meeting.displayTitle}</span>
-                        <ArrowUpRight aria-hidden="true" class="external-link__icon" />
-                      </a>
-                    ) : (
-                      meeting.displayTitle
-                    )}
-                  </h3>
-                  {meeting.displayLocation && (
-                    <p class="mt-1 text-sm text-muted-foreground">
-                      {meeting.displayLocation}
-                    </p>
-                  )}
-                </div>
-                <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
-                  {formatMeetingDateTime(meeting.startsAt) && (
-                    <p>{formatMeetingDateTime(meeting.startsAt)}</p>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-          {meetingsHref && totalUpcomingMeetings > visibleMeetingCount && (
-            <div class="flex justify-start pt-5">
-              <a class="btn" data-variant="outline" href={meetingsHref}>
-                View all meetings
-              </a>
-            </div>
+<ProfileListingSection
+  id="meetings"
+  title="Upcoming meetings"
+  hasItems={hasUpcomingMeetings}
+  showSectionDivider={showSectionDivider}
+  viewAllHref={meetingsHref}
+  viewAllLabel="View all meetings"
+  showViewAll={totalUpcomingMeetings > visibleMeetingCount}
+  emptyTitle="No upcoming meetings found"
+  emptyBody="Muniwork does not currently have upcoming public meetings for this organization."
+>
+  <Fragment slot="items">
+    {displayMeetings.map((meeting) => (
+      <article class="grid gap-3 border-b py-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+        <div class="min-w-0">
+          <h3 class="text-base font-semibold leading-6">
+            <ProfileListingTitle title={meeting.displayTitle} href={meeting.publicUrl} />
+          </h3>
+          {meeting.displayLocation && (
+            <p class="mt-1 text-sm text-muted-foreground">
+              {meeting.displayLocation}
+            </p>
           )}
         </div>
-      ) : (
-        <div class="alert">
-          <div>
-            <strong>No upcoming meetings found</strong>
-            <p>
-              Muniwork does not currently have upcoming public meetings for this
-              organization.
-            </p>
-          </div>
+        <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
+          {meeting.startsAtText && <p>{meeting.startsAtText}</p>}
         </div>
-      )}
-    </section>
-  </article>
-</section>
+      </article>
+    ))}
+  </Fragment>
+</ProfileListingSection>
