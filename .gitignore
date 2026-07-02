@@ -8,6 +8,7 @@ build/
 .next/
 .astro/
 jobs-ingestion/
+.playwright-cli/
 
 # Local Netlify folder
 .netlify
