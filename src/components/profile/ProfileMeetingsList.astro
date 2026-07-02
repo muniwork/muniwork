@@ -14,7 +14,7 @@ const displayMeetings = upcomingMeetings.map((meeting) => ({
   displayLocation: formatLocation(meeting.location),
 }));
 
-function formatMeetingDate(value: string | null | undefined): string | null {
+function formatMeetingDateTime(value: string | null | undefined): string | null {
   if (!value) {
     return null;
   }
@@ -23,16 +23,6 @@ function formatMeetingDate(value: string | null | undefined): string | null {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-    timeZone: 'America/New_York',
-  }).format(new Date(value));
-}
-
-function formatMeetingTime(value: string | null | undefined): string | null {
-  if (!value) {
-    return null;
-  }
-
-  return new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
     minute: '2-digit',
     timeZone: 'America/New_York',
@@ -75,15 +65,8 @@ function formatMeetingTime(value: string | null | undefined): string | null {
                   )}
                 </div>
                 <div class="grid gap-1 text-left text-sm text-muted-foreground sm:text-right">
-                  {formatMeetingDate(meeting.startsAt) && (
-                    <p>
-                      <span class="font-medium text-foreground">
-                        {formatMeetingDate(meeting.startsAt)}
-                      </span>
-                    </p>
-                  )}
-                  {formatMeetingTime(meeting.startsAt) && (
-                    <p>{formatMeetingTime(meeting.startsAt)}</p>
+                  {formatMeetingDateTime(meeting.startsAt) && (
+                    <p>{formatMeetingDateTime(meeting.startsAt)}</p>
                   )}
                 </div>
               </article>
