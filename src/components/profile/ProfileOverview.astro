@@ -8,12 +8,12 @@ const isCounty = organization.organizationType?.trim().toLowerCase() === 'county
 
 const governanceIntroBySlug: Record<string, string> = {
   'boca-raton-fl':
-    'Boca Raton is governed by a five-member City Council, including a directly elected mayor. Council members are elected at large to designated seats in nonpartisan elections, with staggered three-year terms and consecutive-term limits.',
+    'The mission of the City of Boca Raton is to responsibly provide outstanding services to enhance our unique quality of life.',
 };
 
 const overviewIntro =
   governanceIntroBySlug[organization.slug] ??
-  `${organization.officialName} is a ${organization.organizationType} profile in ${stateName}. This page is organized around the core public-sector workflows Muniwork will track for each organization: careers, procurement, and meetings.`;
+  `${organization.officialName} is a ${organization.organizationType} profile in ${stateName}, organized around careers, procurement, and meetings.`;
 
 function formatOrganizationType(value: string | null | undefined): string {
   if (!value) {
@@ -44,44 +44,40 @@ const overviewDetailsGridClass =
   class="scroll-mt-24"
   aria-labelledby="overview-title"
 >
-  <article class="card">
-    <header>
-      <h2 id="overview-title" class="text-2xl font-semibold">Overview</h2>
-    </header>
+  <article class="border-b pb-8">
+    <h2 id="overview-title" class="sr-only">Overview</h2>
 
-    <section>
-      <p class="leading-7 text-muted-foreground">
-        {overviewIntro}
-      </p>
+    <p class="max-w-5xl text-sm leading-5 text-muted-foreground">
+      {overviewIntro}
+    </p>
 
-      <dl class={`mt-8 grid justify-items-center gap-6 border-t pt-6 ${overviewDetailsGridClass}`}>
-        {
-          overviewDetails.map((detail) => {
-            const [label, value, href] = detail as [string, string, string?];
+    <dl class={`mt-7 grid gap-x-10 gap-y-6 ${overviewDetailsGridClass}`}>
+      {
+        overviewDetails.map((detail) => {
+          const [label, value, href] = detail as [string, string, string?];
 
-            return (
-              <div>
-                <dt class="text-sm font-semibold">{label}</dt>
-                <dd class="mt-2 text-sm text-muted-foreground">
-                  {href ? (
-                    <a
-                      class="external-link underline-offset-4 hover:text-foreground hover:underline"
-                      href={href}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <span>{value}</span>
-                      <ArrowUpRight aria-hidden="true" class="external-link__icon" />
-                    </a>
-                  ) : (
-                    value
-                  )}
-                </dd>
-              </div>
-            );
-          })
-        }
-      </dl>
-    </section>
+          return (
+            <div>
+              <dt class="text-sm font-semibold">{label}</dt>
+              <dd class="mt-2 text-sm text-muted-foreground">
+                {href ? (
+                  <a
+                    class="external-link underline-offset-4 hover:text-foreground hover:underline"
+                    href={href}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <span>{value}</span>
+                    <ArrowUpRight aria-hidden="true" class="external-link__icon" />
+                  </a>
+                ) : (
+                  value
+                )}
+              </dd>
+            </div>
+          );
+        })
+      }
+    </dl>
   </article>
 </section>
