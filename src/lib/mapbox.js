@@ -16,23 +16,3 @@ export function getMapboxStaticStyle() {
     ? style.slice(MAPBOX_STYLE_URL_PREFIX.length)
     : style;
 }
-
-export function getMapboxStaticCacheBuster() {
-  const explicitCacheBuster = getEnv('MAPBOX_STATIC_CACHE_BUST');
-
-  if (explicitCacheBuster) {
-    return explicitCacheBuster;
-  }
-
-  return import.meta.env?.DEV ? String(Date.now()) : null;
-}
-
-export function shouldRequestFreshMapboxStaticImage() {
-  const explicitFresh = getEnv('MAPBOX_STATIC_FRESH');
-
-  if (explicitFresh !== null) {
-    return explicitFresh === 'true';
-  }
-
-  return Boolean(import.meta.env?.DEV);
-}
