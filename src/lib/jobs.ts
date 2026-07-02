@@ -64,6 +64,7 @@ export async function getOpenJobsByOrganizationId(
     )
     .eq('organization_id', organizationId)
     .eq('status', 'open')
+    .order('closes_at', { ascending: true, nullsFirst: false })
     .order('posted_at', { ascending: false, nullsFirst: false })
     .order('last_seen_at', { ascending: false })
     .order('title', { ascending: true })
