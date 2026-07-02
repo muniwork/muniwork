@@ -1,6 +1,7 @@
 ---
 import { ArrowUpRight } from '@lucide/astro';
 import type { OpenJob } from '../../lib/jobs';
+import { formatListingTitle } from '../../lib/formatters';
 
 const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
 const totalOpenJobs = Astro.props.totalOpenJobs ?? openJobs.length;
@@ -8,6 +9,10 @@ const careersHref = Astro.props.careersHref as string | undefined;
 const showPostedDates = Astro.props.showPostedDates ?? true;
 const visibleJobCount = openJobs.length;
 const hasOpenJobs = visibleJobCount > 0;
+const displayJobs = openJobs.map((job) => ({
+  ...job,
+  displayTitle: formatListingTitle(job.title),
+}));
 
 function formatDate(value: string | null | undefined): string | null {
   if (!value) {
@@ -33,7 +38,7 @@ function formatDate(value: string | null | undefined): string | null {
       {hasOpenJobs ? (
         <div class="grid">
           <div class="grid divide-y">
-            {openJobs.map((job) => (
+            {displayJobs.map((job) => (
               <article class="grid gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                 <div class="min-w-0">
                   <h3 class="text-base font-semibold leading-6">
@@ -44,11 +49,11 @@ function formatDate(value: string | null | undefined): string | null {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        <span>{job.title}</span>
+                        <span>{job.displayTitle}</span>
                         <ArrowUpRight aria-hidden="true" class="external-link__icon" />
                       </a>
                     ) : (
-                      job.title
+                      job.displayTitle
                     )}
                   </h3>
                   {job.department && (

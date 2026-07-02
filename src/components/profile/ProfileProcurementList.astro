@@ -1,12 +1,17 @@
 ---
 import { ArrowUpRight } from '@lucide/astro';
 import type { OpenBid } from '../../lib/bids';
+import { formatListingTitle } from '../../lib/formatters';
 
 const openBids = (Astro.props.openBids ?? []) as OpenBid[];
 const totalOpenBids = Astro.props.totalOpenBids ?? openBids.length;
 const procurementHref = Astro.props.procurementHref as string | undefined;
 const visibleBidCount = openBids.length;
 const hasOpenBids = visibleBidCount > 0;
+const displayBids = openBids.map((bid) => ({
+  ...bid,
+  displayTitle: formatListingTitle(bid.title),
+}));
 
 function formatDate(value: string | null | undefined): string | null {
   if (!value) {
@@ -32,7 +37,7 @@ function formatDate(value: string | null | undefined): string | null {
       {hasOpenBids ? (
         <div class="grid">
           <div class="grid divide-y">
-            {openBids.map((bid) => (
+            {displayBids.map((bid) => (
               <article class="grid gap-3 py-4 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                 <div class="min-w-0">
                   <h3 class="text-base font-semibold leading-6">
@@ -43,11 +48,11 @@ function formatDate(value: string | null | undefined): string | null {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        <span>{bid.title}</span>
+                        <span>{bid.displayTitle}</span>
                         <ArrowUpRight aria-hidden="true" class="external-link__icon" />
                       </a>
                     ) : (
-                      bid.title
+                      bid.displayTitle
                     )}
                   </h3>
                   {(bid.bidNumber || bid.bidType) && (
