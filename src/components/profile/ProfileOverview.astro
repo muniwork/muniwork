@@ -104,14 +104,14 @@ const overviewDetailsGridClass =
   class="scroll-mt-24"
   aria-labelledby="overview-title"
 >
-  <article class="border-b pb-8">
+  <article class="border-b pb-12">
     <h2 id="overview-title" class="sr-only">Overview</h2>
 
-    <p class="max-w-5xl text-sm leading-5 text-muted-foreground">
+    <p class="max-w-5xl text-sm leading-6 text-muted-foreground">
       {overviewIntro}
     </p>
 
-    <dl class={`mt-7 grid gap-x-10 gap-y-6 ${overviewDetailsGridClass}`}>
+    <dl class={`mt-10 grid gap-x-12 gap-y-8 ${overviewDetailsGridClass}`}>
       {
         overviewDetails.map((detail) => {
           const [label, value, href] = detail as [string, string, string?];

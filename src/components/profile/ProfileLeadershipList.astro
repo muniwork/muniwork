@@ -14,14 +14,14 @@ const hasSingleAdministrationRole = administrationRoles.length === 1;
 ---
 
 <section id="leadership" class="scroll-mt-24">
-  <article class="border-b pb-8">
+  <article class="border-b pb-12">
     <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
       <h2 class="text-xl font-semibold">Leadership</h2>
     </header>
 
-    <section class="mt-4">
+    <section class="mt-6">
       {hasLeadership ? (
-        <div class="grid gap-6">
+        <div class="grid gap-8">
           {governingBodyRoles.length > 0 && (
             <div>
               <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7">
@@ -57,7 +57,7 @@ const hasSingleAdministrationRole = administrationRoles.length === 1;
 
           {governingBodyRoles.length > 0 && administrationRoles.length > 0 && (
             <div class="flex justify-center" aria-hidden="true">
-              <div class="h-8 border-l"></div>
+              <div class="h-10 border-l"></div>
             </div>
           )}
 
