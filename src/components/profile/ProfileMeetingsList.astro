@@ -6,6 +6,7 @@ import { formatListingTitle, formatLocation } from '../../lib/formatters';
 const upcomingMeetings = (Astro.props.upcomingMeetings ?? []) as UpcomingMeeting[];
 const totalUpcomingMeetings = Astro.props.totalUpcomingMeetings ?? upcomingMeetings.length;
 const meetingsHref = Astro.props.meetingsHref as string | undefined;
+const showSectionDivider = Astro.props.showSectionDivider ?? true;
 const visibleMeetingCount = upcomingMeetings.length;
 const hasUpcomingMeetings = visibleMeetingCount > 0;
 const displayMeetings = upcomingMeetings.map((meeting) => ({
@@ -31,7 +32,7 @@ function formatMeetingDateTime(value: string | null | undefined): string | null 
 ---
 
 <section id="meetings" class="scroll-mt-24">
-  <article class="border-b pb-8">
+  <article class={showSectionDivider ? 'border-b pb-8' : ''}>
     <header class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
       <h2 class="text-xl font-semibold">Upcoming meetings</h2>
     </header>

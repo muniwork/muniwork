@@ -8,6 +8,7 @@ import ProfileShell from './ProfileShell.astro';
 import type { OpenBid } from '../../lib/bids';
 import type { OpenJob } from '../../lib/jobs';
 import type { UpcomingMeeting } from '../../lib/meetings';
+import { profileWorkflowSections } from '../../lib/profile-sections.js';
 
 const { organization } = Astro.props;
 const openJobs = (Astro.props.openJobs ?? []) as OpenJob[];
@@ -16,6 +17,9 @@ const openBids = (Astro.props.openBids ?? []) as OpenBid[];
 const totalOpenBids = Astro.props.totalOpenBids ?? openBids.length;
 const upcomingMeetings = (Astro.props.upcomingMeetings ?? []) as UpcomingMeeting[];
 const totalUpcomingMeetings = Astro.props.totalUpcomingMeetings ?? upcomingMeetings.length;
+const hasSectionsAfterMeetings = Object.keys(profileWorkflowSections).some(
+  (id) => !['meetings', 'procurement'].includes(id)
+);
 ---
 
 <ProfileShell
@@ -39,6 +43,7 @@ const totalUpcomingMeetings = Astro.props.totalUpcomingMeetings ?? upcomingMeeti
     <ProfileMeetingsList
       upcomingMeetings={upcomingMeetings}
       totalUpcomingMeetings={totalUpcomingMeetings}
+      showSectionDivider={hasSectionsAfterMeetings}
     />
     <ProfilePipelineSections />
   </div>
