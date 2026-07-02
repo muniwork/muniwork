@@ -2,46 +2,28 @@
 export const prerender = false;
 
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ProfileNotFound from '../components/profile/ProfileNotFound.astro';
 import ProfilePage from '../components/profile/ProfilePage.astro';
 import SupabaseSetupNotice from '../components/system/SupabaseSetupNotice.astro';
-import type { OpenBid } from '../lib/bids';
-import type { OpenJob } from '../lib/jobs';
-import type { UpcomingMeeting } from '../lib/meetings';
-import { getOrganizationProfileBySlug } from '../lib/profile';
-import { MissingSupabaseEnvError } from '../lib/supabase.js';
+import { getProfileRouteStatus, loadProfileRouteData } from '../lib/profile-route';
 import '../styles/global.css';
 
 const { slug } = Astro.params;
-let organization = null;
-let openJobs: OpenJob[] = [];
-let totalOpenJobs = 0;
-let openBids: OpenBid[] = [];
-let totalOpenBids = 0;
-let upcomingMeetings: UpcomingMeeting[] = [];
-let totalUpcomingMeetings = 0;
-let missingSupabaseVariables = [];
+const routeData = await loadProfileRouteData(slug, { bidLimit: 5, jobLimit: 5 });
+const { profile, missingSupabaseVariables } = routeData;
+const {
+  organization,
+  openJobs,
+  totalOpenJobs,
+  openBids,
+  totalOpenBids,
+  upcomingMeetings,
+  totalUpcomingMeetings,
+} = profile;
+const routeStatus = getProfileRouteStatus(routeData);
 
-try {
-  const profile = await getOrganizationProfileBySlug(slug, { bidLimit: 5, jobLimit: 5 });
-  organization = profile.organization;
-  openJobs = profile.openJobs;
-  totalOpenJobs = profile.totalOpenJobs;
-  openBids = profile.openBids;
-  totalOpenBids = profile.totalOpenBids;
-  upcomingMeetings = profile.upcomingMeetings;
-  totalUpcomingMeetings = profile.totalUpcomingMeetings;
-} catch (error) {
-  if (!(error instanceof MissingSupabaseEnvError)) {
-    throw error;
-  }
-
-  missingSupabaseVariables = error.missingVariables;
-}
-
-if (missingSupabaseVariables.length > 0) {
-  Astro.response.status = 503;
-} else if (!organization) {
-  Astro.response.status = 404;
+if (routeStatus) {
+  Astro.response.status = routeStatus;
 }
 
 const pageTitle = organization
@@ -68,18 +50,6 @@ const pageDescription = organization
       totalUpcomingMeetings={totalUpcomingMeetings}
     />
   ) : (
-    <main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
-      <div class="mx-auto max-w-3xl">
-        <p class="badge" data-variant="outline">
-          Not found
-        </p>
-        <h1 class="mt-3 text-4xl font-semibold leading-none sm:text-5xl">
-          Organization not found
-        </h1>
-        <p class="mt-3 leading-7 text-muted-foreground">
-          There is no organization profile for this slug.
-        </p>
-      </div>
-    </main>
+    <ProfileNotFound />
   )}
 </BaseLayout>

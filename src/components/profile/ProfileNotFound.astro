@@ -1,0 +1,20 @@
+---
+const {
+  title = 'Organization not found',
+  body = 'There is no organization profile for this slug.',
+} = Astro.props;
+---
+
+<main class="min-h-screen bg-muted/30 px-5 py-12 text-foreground">
+  <div class="mx-auto max-w-3xl">
+    <p class="badge" data-variant="outline">
+      Not found
+    </p>
+    <h1 class="mt-3 text-4xl font-semibold leading-none sm:text-5xl">
+      {title}
+    </h1>
+    <p class="mt-3 leading-7 text-muted-foreground">
+      {body}
+    </p>
+  </div>
+</main>
