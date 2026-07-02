@@ -20,6 +20,20 @@ function normalizeIdentityAsset(row, supabase) {
   };
 }
 
+function normalizeProfileStatements(rows) {
+  return Object.fromEntries(
+    (rows ?? []).map((row) => [
+      row.statement_type,
+      {
+        statementText: row.statement_text,
+        sourceUrl: row.source_url,
+        sourceLabel: row.source_label,
+        verifiedAt: row.verified_at,
+      },
+    ])
+  );
+}
+
 function normalizeOrganization(row) {
   if (!row) {
     return null;
@@ -38,6 +52,7 @@ function normalizeOrganization(row) {
     coverZoom: row.cover_zoom,
     coverLocationLabel: row.cover_location_label,
     sealAsset: row.sealAsset ?? null,
+    profileStatements: row.profileStatements ?? {},
   };
 }
 
@@ -121,7 +136,11 @@ export async function getOrganizationBySlug(slug) {
     return null;
   }
 
-  const [{ data: sealAsset, error: sealAssetError }, countyName] = await Promise.all([
+  const [
+    { data: sealAsset, error: sealAssetError },
+    { data: profileStatements, error: profileStatementsError },
+    countyName,
+  ] = await Promise.all([
     supabase
       .from('organization_identity_assets')
       .select(
@@ -131,6 +150,10 @@ export async function getOrganizationBySlug(slug) {
       .eq('asset_type', 'seal')
       .eq('is_primary', true)
       .maybeSingle(),
+    supabase
+      .from('organization_profile_statements')
+      .select('statement_type, statement_text, source_url, source_label, verified_at')
+      .eq('organization_id', data.id),
     getCountyNameForOrganization(supabase, data.id),
   ]);
 
@@ -138,10 +161,17 @@ export async function getOrganizationBySlug(slug) {
     throw new Error(`Failed to load organization seal ${slug}: ${sealAssetError.message}`);
   }
 
+  if (profileStatementsError) {
+    throw new Error(
+      `Failed to load organization profile statements ${slug}: ${profileStatementsError.message}`
+    );
+  }
+
   return normalizeOrganization({
     ...data,
     countyName,
     sealAsset: normalizeIdentityAsset(sealAsset, supabase),
+    profileStatements: normalizeProfileStatements(profileStatements),
   });
 }
 

@@ -6,14 +6,74 @@ const { organization } = Astro.props;
 const stateName = formatStateName(organization.stateCode);
 const isCounty = organization.organizationType?.trim().toLowerCase() === 'county';
 
-const governanceIntroBySlug: Record<string, string> = {
+const fallbackMissionStatementBySlug: Record<string, string> = {
   'boca-raton-fl':
-    'The mission of the City of Boca Raton is to responsibly provide outstanding services to enhance our unique quality of life.',
+    'Our mission is to responsibly provide outstanding services to enhance our unique quality of life.',
 };
 
-const overviewIntro =
-  governanceIntroBySlug[organization.slug] ??
-  `${organization.officialName} is a ${organization.organizationType} profile in ${stateName}, organized around careers, procurement, and meetings.`;
+const missionStatement =
+  organization.profileStatements?.mission?.statementText ??
+  fallbackMissionStatementBySlug[organization.slug];
+
+type ProfileOverviewOrganization = {
+  officialName?: string | null;
+  organizationType?: string | null;
+};
+
+function formatMissionSubject(organization: ProfileOverviewOrganization): string {
+  const name = organization.officialName?.trim();
+  const type = organization.organizationType?.trim().toLowerCase();
+
+  if (!name) {
+    return 'The organization';
+  }
+
+  if (/^(city|town|village)\s+of\s+/i.test(name)) {
+    const formattedName = name.replace(/^(city|town|village)\b/i, (match: string) =>
+      match.charAt(0).toUpperCase() + match.slice(1).toLowerCase()
+    );
+
+    return `The ${formattedName}`;
+  }
+
+  if (/^county\s+of\s+/i.test(name)) {
+    const formattedName = name.replace(/^county\b/i, 'County');
+
+    return `The ${formattedName}`;
+  }
+
+  if (/county$/i.test(name)) {
+    return name;
+  }
+
+  if (type === 'county') {
+    return `${name} County`;
+  }
+
+  return `The City of ${name}`;
+}
+
+function formatMissionClause(statement: string): string {
+  const trimmedStatement = statement.trim().replace(/\s+/g, ' ').replace(/[.。]\s*$/, '');
+
+  return trimmedStatement
+    .replace(/^we are dedicated to providing\b/i, 'to provide')
+    .replace(/^we are dedicated to\b/i, 'to')
+    .replace(/^our mission is to\b/i, 'to')
+    .replace(/^the mission is to\b/i, 'to')
+    .replace(/\bour\b/gi, 'its');
+}
+
+function formatMissionIntro(
+  organization: ProfileOverviewOrganization,
+  statement: string
+): string {
+  return `${formatMissionSubject(organization)}'s mission is ${formatMissionClause(statement)}.`;
+}
+
+const overviewIntro = missionStatement
+  ? formatMissionIntro(organization, missionStatement)
+  : `${organization.officialName} is a ${organization.organizationType} profile in ${stateName}, organized around careers, procurement, and meetings.`;
 
 function formatOrganizationType(value: string | null | undefined): string {
   if (!value) {

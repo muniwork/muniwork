@@ -26,6 +26,15 @@ type OrganizationProfile = {
     usageNotes: string | null;
     verificationStatus: string;
   } | null;
+  profileStatements: Record<
+    string,
+    {
+      statementText: string;
+      sourceUrl: string;
+      sourceLabel: string | null;
+      verifiedAt: string;
+    }
+  >;
 };
 
 export type OrganizationProfilePageData = {
