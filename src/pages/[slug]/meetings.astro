@@ -1,0 +1,60 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProfileMeetingsList from '../../components/profile/ProfileMeetingsList.astro';
+import ProfileNotFound from '../../components/profile/ProfileNotFound.astro';
+import ProfileShell from '../../components/profile/ProfileShell.astro';
+import SupabaseSetupNotice from '../../components/system/SupabaseSetupNotice.astro';
+import { getProfileRouteStatus, loadProfileRouteData } from '../../lib/profile-route';
+import '../../styles/global.css';
+
+const { slug } = Astro.params;
+const routeData = await loadProfileRouteData(slug, {
+  bidLimit: 1,
+  jobLimit: 1,
+  meetingLimit: 100,
+});
+const { profile, missingSupabaseVariables } = routeData;
+const {
+  organization,
+  totalOpenJobs,
+  totalOpenBids,
+  upcomingMeetings,
+  totalUpcomingMeetings,
+} = profile;
+const routeStatus = getProfileRouteStatus(routeData);
+
+if (routeStatus) {
+  Astro.response.status = routeStatus;
+}
+
+const pageTitle = organization
+  ? `${organization.officialName} meetings | Muniwork`
+  : missingSupabaseVariables.length > 0
+    ? 'Muniwork setup required'
+    : 'Organization meetings not found | Muniwork';
+const pageDescription = organization
+  ? `Upcoming public meetings, agendas, and calendar notices for ${organization.officialName}.`
+  : 'Muniwork profiles local government organizations and public meetings.';
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  {missingSupabaseVariables.length > 0 ? (
+    <SupabaseSetupNotice missingVariables={missingSupabaseVariables} />
+  ) : organization ? (
+    <ProfileShell
+      organization={organization}
+      totalOpenJobs={totalOpenJobs}
+      totalOpenBids={totalOpenBids}
+    >
+      <ProfileMeetingsList
+        upcomingMeetings={upcomingMeetings}
+        totalUpcomingMeetings={totalUpcomingMeetings}
+        showSectionDivider={false}
+      />
+    </ProfileShell>
+  ) : (
+    <ProfileNotFound />
+  )}
+</BaseLayout>
