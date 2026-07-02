@@ -83,9 +83,20 @@ const TITLE_ACRONYMS = new Set([
   'ITB',
   'ITN',
   'ITQ',
+  'FAU',
   'RFB',
   'RFP',
   'RFQ',
+]);
+
+const LOCATION_ACRONYMS = new Set([
+  ...Object.keys(STATE_NAMES_BY_CODE),
+  'ADA',
+  'FAU',
+  'NW',
+  'NE',
+  'SW',
+  'SE',
 ]);
 
 export function formatStateName(stateCode: string | null | undefined): string {
@@ -147,6 +158,21 @@ export function formatListingTitle(title: string | null | undefined): string {
   return words
     .map((word, index) => formatTitleWord(word, index, words.length))
     .join(' ');
+}
+
+export function formatLocation(value: string | null | undefined): string {
+  if (!value) {
+    return '';
+  }
+
+  return value
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/\bBOCA RATON\s+FL\b/gi, 'Boca Raton, FL')
+    .replace(/\bBOCA RATON\b/gi, 'Boca Raton')
+    .replace(/\b([A-Z]{2,})\b/g, (word) =>
+      LOCATION_ACRONYMS.has(word) ? word : `${word.charAt(0)}${word.slice(1).toLowerCase()}`
+    );
 }
 
 function formatTitleWord(word: string, index: number, wordCount: number): string {

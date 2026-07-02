@@ -1,7 +1,7 @@
 ---
 import { ArrowUpRight } from '@lucide/astro';
 import type { UpcomingMeeting } from '../../lib/meetings';
-import { formatListingTitle } from '../../lib/formatters';
+import { formatListingTitle, formatLocation } from '../../lib/formatters';
 
 const upcomingMeetings = (Astro.props.upcomingMeetings ?? []) as UpcomingMeeting[];
 const totalUpcomingMeetings = Astro.props.totalUpcomingMeetings ?? upcomingMeetings.length;
@@ -11,6 +11,7 @@ const hasUpcomingMeetings = visibleMeetingCount > 0;
 const displayMeetings = upcomingMeetings.map((meeting) => ({
   ...meeting,
   displayTitle: formatListingTitle(meeting.title),
+  displayLocation: formatLocation(meeting.location),
 }));
 
 function formatMeetingDate(value: string | null | undefined): string | null {
@@ -67,9 +68,9 @@ function formatMeetingTime(value: string | null | undefined): string | null {
                       meeting.displayTitle
                     )}
                   </h3>
-                  {meeting.location && (
+                  {meeting.displayLocation && (
                     <p class="mt-1 text-sm text-muted-foreground">
-                      {meeting.location}
+                      {meeting.displayLocation}
                     </p>
                   )}
                 </div>
